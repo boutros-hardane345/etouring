@@ -2,545 +2,88 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login | e_Touring</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #e8f5e9;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Abstract Background Pattern */
-        .bg-pattern {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 0;
-        }
-
-        .bg-shape-1 {
-            position: absolute;
-            top: -20%;
-            right: -10%;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(76, 175, 80, 0.15) 0%, transparent 70%);
-            border-radius: 50%;
-            animation: float 20s ease-in-out infinite;
-        }
-
-        .bg-shape-2 {
-            position: absolute;
-            bottom: -20%;
-            left: -10%;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(46, 125, 50, 0.1) 0%, transparent 70%);
-            border-radius: 50%;
-            animation: float 25s ease-in-out infinite reverse;
-        }
-
-        .bg-shape-3 {
-            position: absolute;
-            top: 30%;
-            left: 20%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(139, 195, 74, 0.08) 0%, transparent 70%);
-            border-radius: 50%;
-            animation: float 18s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -30px) scale(1.05); }
-            66% { transform: translate(-20px, 20px) scale(0.95); }
-        }
-
-        /* Main Card */
-        .login-card {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            width: 1000px;
-            max-width: 90%;
-            background: white;
-            border-radius: 32px;
-            overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            animation: slideUp 0.6s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Left Side - Branding */
-        .brand-side {
-            flex: 1;
             background: linear-gradient(135deg, #1b5e20, #2e7d32, #4caf50);
-            padding: 3rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            overflow: hidden;
         }
-
-        .brand-side::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="rgba(255,255,255,0.05)" d="M50,10 L60,30 L50,50 L40,30 Z"/><path fill="rgba(255,255,255,0.03)" d="M80,20 L90,40 L80,60 L70,40 Z"/></svg>') repeat;
-            background-size: 40px;
-            pointer-events: none;
-        }
-
-        .brand-logo {
-            position: relative;
-            z-index: 1;
-        }
-
-        .brand-logo .icon {
-            width: 65px;
-            height: 65px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .brand-logo .icon i {
-            font-size: 2rem;
-            color: white;
-        }
-
-        .brand-logo h2 {
-            color: white;
-            font-size: 1.8rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            margin-bottom: 0.5rem;
-        }
-
-        .brand-logo p {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        .brand-features {
-            position: relative;
-            z-index: 1;
-            margin-top: 3rem;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            color: white;
-        }
-
-        .feature-item i {
-            width: 35px;
-            height: 35px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-        }
-
-        .feature-item span {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        .brand-quote {
-            position: relative;
-            z-index: 1;
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .brand-quote p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.85rem;
-            font-style: italic;
-        }
-
-        /* Right Side - Form */
-        .form-side {
-            flex: 1;
-            padding: 3rem;
+        .login-container {
             background: white;
-        }
-
-        .form-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .form-header h3 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #1a1a2e;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-header p {
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-
-        /* Input Groups */
-        .input-group {
-            margin-bottom: 1.25rem;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-        .input-wrapper i {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #a0aec0;
-            font-size: 1rem;
-            transition: all 0.2s ease;
-        }
-
-        .input-wrapper input {
+            padding: 2.5rem;
+            border-radius: 30px;
             width: 100%;
-            padding: 0.9rem 1rem 0.9rem 2.8rem;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 14px;
-            font-size: 0.9rem;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.2s ease;
-            background: #f8fafc;
+            max-width: 420px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.5s ease;
         }
-
-        .input-wrapper input:focus {
-            outline: none;
-            border-color: #2e7d32;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
-        }
-
-        .input-wrapper input:focus + i {
-            color: #2e7d32;
-        }
-
-        /* Login Button */
-        .login-btn {
-            width: 100%;
-            padding: 0.9rem;
-            background: linear-gradient(135deg, #2e7d32, #4caf50);
-            color: white;
-            border: none;
-            border-radius: 14px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin-top: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -5px rgba(46, 125, 50, 0.4);
-        }
-
-        .login-btn:active {
-            transform: translateY(0);
-        }
-
-        .login-btn.loading {
-            opacity: 0.8;
-            cursor: not-allowed;
-        }
-
-        .login-btn.loading i {
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Demo Credentials */
-        .demo-credentials {
-            background: #f1f8e9;
-            border-radius: 14px;
-            padding: 1rem;
-            margin-top: 1.5rem;
-            text-align: center;
-        }
-
-        .demo-credentials p {
-            font-size: 0.75rem;
-            color: #558b2f;
-            margin-bottom: 0.5rem;
-        }
-
-        .cred-badge {
-            display: inline-flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .cred-badge span {
-            background: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #2e7d32;
-            font-family: monospace;
-        }
-
-        /* Error Message */
-        .error-msg {
-            background: #fef2f2;
-            color: #dc2626;
-            padding: 0.75rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            text-align: center;
-            margin-top: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .login-card {
-                flex-direction: column;
-                max-width: 95%;
-            }
-            
-            .brand-side {
-                padding: 2rem;
-                text-align: center;
-            }
-            
-            .brand-features {
-                display: none;
-            }
-            
-            .brand-quote {
-                margin-top: 1rem;
-            }
-            
-            .form-side {
-                padding: 2rem;
-            }
-            
-            .brand-logo .icon {
-                margin: 0 auto 1.5rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .form-side {
-                padding: 1.5rem;
-            }
-            
-            .form-header h3 {
-                font-size: 1.5rem;
-            }
-            
-            .input-wrapper input {
-                padding: 0.8rem 1rem 0.8rem 2.5rem;
-            }
-        }
+        @keyframes slideUp { from { opacity:0; transform:translateY(50px); } to { opacity:1; transform:translateY(0); } }
+        .logo { text-align: center; margin-bottom: 2rem; }
+        .logo-icon { width: 80px; height: 80px; background: linear-gradient(135deg, #2e7d32, #4caf50); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+        .logo-icon i { font-size: 2.5rem; color: white; }
+        h1 { font-size: 1.8rem; color: #2e7d32; text-align: center; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2e7d32; }
+        input { width: 100%; padding: 0.9rem 1rem; border: 2px solid #e8f5e9; border-radius: 15px; font-size: 1rem; background: #f9fbe7; }
+        input:focus { outline: none; border-color: #4caf50; box-shadow: 0 0 0 3px rgba(76,175,80,0.2); }
+        button { width: 100%; padding: 0.9rem; background: linear-gradient(135deg, #2e7d32, #4caf50); color: white; border: none; border-radius: 15px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(46,125,50,0.3); }
+        .error { color: #d32f2f; margin-top: 1rem; text-align: center; }
+        .info { text-align: center; margin-top: 1.5rem; font-size: 0.8rem; color: #7cb342; }
     </style>
 </head>
 <body>
-    <div class="bg-pattern">
-        <div class="bg-shape-1"></div>
-        <div class="bg-shape-2"></div>
-        <div class="bg-shape-3"></div>
+    <div class="login-container">
+        <div class="logo"><div class="logo-icon"><i class="fas fa-tree"></i></div><h1>e_Touring Admin</h1></div>
+        <form id="loginForm">
+            <div class="form-group"><label>Username</label><input type="text" id="username" required></div>
+            <div class="form-group"><label>Password</label><input type="password" id="password" required></div>
+            <button type="submit" id="loginBtn">Login</button>
+            <div id="errorMsg" class="error" style="display:none"></div>
+        </form>
+        <div class="info">Demo: admin / admin123</div>
     </div>
-
-    <div class="login-card">
-        <!-- Left Branding Side -->
-        <div class="brand-side">
-            <div class="brand-logo">
-                <div class="icon">
-                    <i class="fas fa-tree"></i>
-                </div>
-                <h2>e_Touring</h2>
-                <p>Eco-Tourism Lebanon</p>
-            </div>
-
-            <div class="brand-features">
-                <div class="feature-item">
-                    <i class="fas fa-leaf"></i>
-                    <span>Sustainable Eco-Tourism</span>
-                </div>
-                <div class="feature-item">
-                    <i class="fas fa-hiking"></i>
-                    <span>Expert Local Guides</span>
-                </div>
-                <div class="feature-item">
-                    <i class="fas fa-heart"></i>
-                    <span>Community Impact</span>
-                </div>
-            </div>
-
-            <div class="brand-quote">
-                <p>"Connecting people with nature through meaningful eco-friendly adventures."</p>
-            </div>
-        </div>
-
-        <!-- Right Form Side -->
-        <div class="form-side">
-            <div class="form-header">
-                <h3>Welcome Back</h3>
-                <p>Sign in to your admin account</p>
-            </div>
-
-            <form id="loginForm">
-                <div class="input-group">
-                    <label>Username</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="username" placeholder="Enter your username" required autocomplete="off">
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label>Password</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="password" placeholder="Enter your password" required>
-                    </div>
-                </div>
-
-                <button type="submit" class="login-btn" id="loginBtn">
-                    <i class="fas fa-arrow-right"></i>
-                    <span>Sign In</span>
-                </button>
-
-                <div id="errorMsg" class="error-msg" style="display: none;"></div>
-            </form>
-
-            <div class="demo-credentials">
-                <p><i class="fas fa-info-circle"></i> Demo Credentials</p>
-                <div class="cred-badge">
-                    <span>Username: admin</span>
-                    <span>Password: admin123</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        const loginBtn = document.getElementById('loginBtn');
-        const errorMsg = document.getElementById('errorMsg');
+        const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://etouring-backend.onrender.com';
         
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            errorMsg.style.display = 'none';
-            errorMsg.innerHTML = '';
-            
-            loginBtn.classList.add('loading');
-            loginBtn.innerHTML = '<i class="fas fa-spinner"></i> <span>Signing in...</span>';
+            const btn = document.getElementById('loginBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Logging in...';
+            btn.disabled = true;
             
             try {
-                const res = await fetch('/api/auth/login', {
+                const res = await fetch(`${API_URL}/api/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify({ username: document.getElementById('username').value, password: document.getElementById('password').value })
                 });
-                
                 const data = await res.json();
-                
                 if (res.ok) {
                     localStorage.setItem('adminToken', data.token);
-                    loginBtn.innerHTML = '<i class="fas fa-check"></i> <span>Success!</span>';
-                    setTimeout(() => {
-                        window.location.href = '/admin/dashboard.html';
-                    }, 800);
+                    localStorage.setItem('API_BASE_URL', API_URL);
+                    window.location.href = '/admin/dashboard.html';
                 } else {
-                    errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + (data.message || 'Invalid credentials');
-                    errorMsg.style.display = 'flex';
-                    loginBtn.classList.remove('loading');
-                    loginBtn.innerHTML = '<i class="fas fa-arrow-right"></i> <span>Sign In</span>';
-                    document.getElementById('password').value = '';
-                    document.getElementById('password').focus();
+                    document.getElementById('errorMsg').innerText = data.message || 'Login failed';
+                    document.getElementById('errorMsg').style.display = 'block';
+                    btn.innerHTML = 'Login';
+                    btn.disabled = false;
                 }
-            } catch (err) {
-                errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Network error. Please try again.';
-                errorMsg.style.display = 'flex';
-                loginBtn.classList.remove('loading');
-                loginBtn.innerHTML = '<i class="fas fa-arrow-right"></i> <span>Sign In</span>';
+            } catch(err) {
+                document.getElementById('errorMsg').innerText = 'Network error. Is backend running?';
+                document.getElementById('errorMsg').style.display = 'block';
+                btn.innerHTML = 'Login';
+                btn.disabled = false;
             }
         });
-        
-        document.getElementById('password').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                document.getElementById('loginForm').dispatchEvent(new Event('submit'));
-            }
-        });
-        
-        document.getElementById('username').focus();
     </script>
 </body>
 </html>

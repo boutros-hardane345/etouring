@@ -7,73 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="admin-style.css">
-    <style>
-        .activity-list {
-            list-style: none;
-        }
-        .activity-list li {
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--admin-gray);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: var(--admin-transition);
-        }
-        .activity-list li:hover {
-            transform: translateX(5px);
-            background: var(--admin-primary-bg);
-            padding-left: 0.5rem;
-            border-radius: var(--admin-border-radius);
-        }
-        .activity-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--admin-primary-bg);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--admin-primary);
-            transition: var(--admin-transition);
-        }
-        .activity-list li:hover .activity-icon {
-            transform: scale(1.1);
-            background: var(--admin-primary);
-            color: white;
-        }
-        .activity-detail {
-            flex: 1;
-        }
-        .activity-title {
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-            color: var(--admin-dark);
-        }
-        .activity-time {
-            font-size: 0.75rem;
-            color: var(--admin-gray-dark);
-        }
-        @keyframes slideInLeft {
-            from { opacity: 0; transform: translateX(-30px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        .nav-menu li {
-            animation: slideInLeft 0.5s ease forwards;
-            opacity: 0;
-        }
-        .nav-menu li:nth-child(1) { animation-delay: 0.1s; }
-        .nav-menu li:nth-child(2) { animation-delay: 0.2s; }
-        .nav-menu li:nth-child(3) { animation-delay: 0.3s; }
-        .nav-menu li:nth-child(4) { animation-delay: 0.4s; }
-        .nav-menu li:nth-child(5) { animation-delay: 0.5s; }
-    </style>
 </head>
 <body>
     <div class="admin-wrapper">
         <aside class="sidebar">
-            <div class="logo">
-                <i class="fas fa-tree"></i> e_Touring
-            </div>
+            <div class="logo"><i class="fas fa-tree"></i> e_Touring Admin</div>
             <ul class="nav-menu">
                 <li><a href="dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
@@ -82,196 +20,38 @@
                 <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
             </ul>
         </aside>
-
         <main class="main-content">
-            <div class="welcome-banner">
-                <h2><i class="fas fa-leaf"></i> Welcome back, Admin!</h2>
-                <p>Here's what's happening with your e_Touring platform today.</p>
-            </div>
-
-            <div class="quick-actions">
-                <div class="quick-action-card" onclick="window.location.href='events.html'">
-                    <i class="fas fa-plus-circle"></i>
-                    <h4>Add New Event</h4>
-                </div>
-                <div class="quick-action-card" onclick="window.location.href='plans.html'">
-                    <i class="fas fa-plus-circle"></i>
-                    <h4>Add New Plan</h4>
-                </div>
-                <div class="quick-action-card" onclick="window.location.href='feedback.html'">
-                    <i class="fas fa-check-double"></i>
-                    <h4>Review Feedback</h4>
-                </div>
-                <div class="quick-action-card" onclick="refreshData()">
-                    <i class="fas fa-sync-alt"></i>
-                    <h4>Refresh Data</h4>
-                </div>
-            </div>
-
+            <div class="welcome-banner"><h2>Welcome back, Admin!</h2><p>Manage your e_Touring platform</p></div>
             <div class="stats-grid" id="statsGrid">
-                <div class="stat-card">
-                    <i class="fas fa-calendar-alt"></i>
-                    <h3 id="eventsCount">0</h3>
-                    <p>Total Events</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-map-marked-alt"></i>
-                    <h3 id="plansCount">0</h3>
-                    <p>Active Plans</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-clock"></i>
-                    <h3 id="pendingFeedback">0</h3>
-                    <p>Pending Feedback</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-star"></i>
-                    <h3 id="totalFeedback">0</h3>
-                    <p>Total Reviews</p>
-                </div>
-            </div>
-
-            <div class="recent-activity">
-                <h3><i class="fas fa-history"></i> Recent Activity</h3>
-                <ul class="activity-list" id="activityList">
-                    <li><div class="activity-icon"><i class="fas fa-spinner fa-pulse"></i></div><div class="activity-detail"><div class="activity-title">Loading activities...</div><div class="activity-time">Please wait</div></div></li>
-                </ul>
+                <div class="stat-card"><i class="fas fa-calendar-alt"></i><h3 id="eventsCount">0</h3><p>Total Events</p></div>
+                <div class="stat-card"><i class="fas fa-map-marked-alt"></i><h3 id="plansCount">0</h3><p>Active Plans</p></div>
+                <div class="stat-card"><i class="fas fa-clock"></i><h3 id="pendingFeedback">0</h3><p>Pending Feedback</p></div>
+                <div class="stat-card"><i class="fas fa-star"></i><h3 id="totalFeedback">0</h3><p>Total Reviews</p></div>
             </div>
         </main>
     </div>
-
     <script>
+        const API_URL = localStorage.getItem('API_BASE_URL') || 'https://etouring-backend.onrender.com';
         const token = localStorage.getItem('adminToken');
         if (!token) window.location.href = 'login.html';
 
         async function fetchStats() {
             try {
-                const res = await fetch('/api/admin/stats', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (!res.ok) {
-                    if (res.status === 401) {
-                        localStorage.removeItem('adminToken');
-                        window.location.href = 'login.html';
-                    }
-                    throw new Error('Failed to fetch stats');
-                }
+                const res = await fetch(`${API_URL}/api/admin/stats`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!res.ok) throw new Error();
                 const stats = await res.json();
-                animateCounter('eventsCount', stats.eventsCount);
-                animateCounter('plansCount', stats.plansCount);
-                animateCounter('pendingFeedback', stats.pendingFeedback);
-                animateCounter('totalFeedback', stats.totalFeedback);
-                await loadRecentActivity();
-            } catch (err) {
-                console.error('Error fetching stats:', err);
-            }
+                document.getElementById('eventsCount').innerText = stats.eventsCount;
+                document.getElementById('plansCount').innerText = stats.plansCount;
+                document.getElementById('pendingFeedback').innerText = stats.pendingFeedback;
+                document.getElementById('totalFeedback').innerText = stats.totalFeedback;
+            } catch(err) { console.error(err); }
         }
         
-        function animateCounter(elementId, targetValue) {
-            const element = document.getElementById(elementId);
-            if (!element) return;
-            let currentValue = 0;
-            const duration = 1000;
-            const increment = targetValue / (duration / 16);
-            const timer = setInterval(() => {
-                currentValue += increment;
-                if (currentValue >= targetValue) {
-                    element.innerText = targetValue;
-                    clearInterval(timer);
-                } else {
-                    element.innerText = Math.floor(currentValue);
-                }
-            }, 16);
-        }
-        
-        async function loadRecentActivity() {
-            const activityList = document.getElementById('activityList');
-            try {
-                const [eventsRes, feedbackRes] = await Promise.all([
-                    fetch('/api/events'),
-                    fetch('/api/feedback/all', { headers: { 'Authorization': `Bearer ${token}` } })
-                ]);
-                const events = await eventsRes.json();
-                const feedbacks = await feedbackRes.json();
-                let activities = [];
-                events.slice(0, 5).forEach(event => {
-                    activities.push({
-                        type: 'event',
-                        title: `📅 Created event: ${event.title}`,
-                        time: event.createdAt || new Date().toISOString(),
-                        icon: 'fa-calendar-plus'
-                    });
-                });
-                const pendingFeedbacks = feedbacks.filter(f => !f.approved);
-                pendingFeedbacks.slice(0, 5).forEach(feedback => {
-                    activities.push({
-                        type: 'feedback',
-                        title: `💬 New feedback from ${feedback.name}`,
-                        time: feedback.createdAt,
-                        icon: 'fa-comment'
-                    });
-                });
-                activities.sort((a, b) => new Date(b.time) - new Date(a.time));
-                activities = activities.slice(0, 10);
-                if (activities.length === 0) {
-                    activityList.innerHTML = `<li><div class="activity-icon"><i class="fas fa-info-circle"></i></div><div class="activity-detail"><div class="activity-title">No recent activity</div><div class="activity-time">Start by adding events or plans</div></div></li>`;
-                } else {
-                    activityList.innerHTML = activities.map(activity => `<li><div class="activity-icon"><i class="fas ${activity.icon}"></i></div><div class="activity-detail"><div class="activity-title">${escapeHtml(activity.title)}</div><div class="activity-time">${formatDate(activity.time)}</div></div></li>`).join('');
-                }
-            } catch (err) {
-                console.error('Error loading activities:', err);
-            }
-        }
-        
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMins / 60);
-            const diffDays = Math.floor(diffHours / 24);
-            if (diffMins < 1) return 'Just now';
-            if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
-            if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-            if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-            return date.toLocaleDateString();
-        }
-        
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
-        
-        function refreshData() {
-            fetchStats();
-            showNotification('Data refreshed successfully!', 'success');
-        }
-        
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = `notification notification-${type}`;
-            notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
-            document.body.appendChild(notification);
-            setTimeout(() => {
-                notification.style.animation = 'slideInRight 0.3s ease reverse';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-        
-        document.getElementById('logoutBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.removeItem('adminToken');
-                window.location.href = 'login.html';
-            }
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('adminToken');
+            window.location.href = 'login.html';
         });
         
-        setInterval(() => { fetchStats(); }, 30000);
         fetchStats();
     </script>
 </body>

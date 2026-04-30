@@ -1,48 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Feedback | e_Touring Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <title>Manage Feedback | e_Touring</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="admin-style.css">
-    <style>
-        .filter-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            padding: 0.5rem 1.5rem;
-            border: 2px solid var(--admin-primary);
-            background: white;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: var(--admin-transition);
-            font-weight: 500;
-        }
-
-        .filter-btn:hover,
-        .filter-btn.active {
-            background: var(--admin-primary);
-            color: white;
-        }
-
-        .rating-stars {
-            color: var(--admin-warning);
-        }
-    </style>
 </head>
-
 <body>
     <div class="admin-wrapper">
-        <aside class="sidebar">
-            <div class="logo"><i class="fas fa-tree"></i> e_Touring</div>
+        <aside class="sidebar"><div class="logo"><i class="fas fa-tree"></i> e_Touring</div>
             <ul class="nav-menu">
                 <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
@@ -52,41 +20,61 @@
             </ul>
         </aside>
         <main class="main-content">
-            <h2><i class="fas fa-comment-dots"></i> Manage Feedback</h2>
-            <div class="filter-buttons"><button class="filter-btn active" data-filter="all">All</button><button
-                    class="filter-btn" data-filter="pending">Pending</button><button class="filter-btn"
-                    data-filter="approved">Approved</button></div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Name</th>
-                            <th>Rating</th>
-                            <th>Message</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="feedbackBody"></tbody>
-                </table>
+            <h2>Manage Feedback</h2>
+            <div class="filter-buttons" style="display:flex; gap:1rem; margin-bottom:1rem;">
+                <button class="btn" onclick="filterFeedback('all')">All</button>
+                <button class="btn" onclick="filterFeedback('pending')">Pending</button>
+                <button class="btn" onclick="filterFeedback('approved')">Approved</button>
             </div>
+            <div class="table-container"><table class="table"><thead><tr><th>Date</th><th>Name</th><th>Rating</th><th>Message</th><th>Status</th><th>Actions</th></tr></thead><tbody id="feedbackBody"></tbody></table></div>
         </main>
     </div>
 
     <script>
-        const token = localStorage.getItem('adminToken'); if (!token) window.location.href = 'login.html';
+        const API_URL = localStorage.getItem('API_BASE_URL') || 'https://etouring-backend.onrender.com';
+        const token = localStorage.getItem('adminToken');
+        if (!token) window.location.href = 'login.html';
+        
         let allFeedback = [], currentFilter = 'all';
-        async function loadFeedback() { const res = await fetch('/api/feedback/all', { headers: { 'Authorization': `Bearer ${token}` } }); if (!res.ok && res.status === 401) { localStorage.removeItem('adminToken'); window.location.href = 'login.html'; } allFeedback = await res.json(); renderFeedback(); }
-        function renderFeedback() { let filtered = allFeedback; if (currentFilter === 'pending') filtered = allFeedback.filter(f => !f.approved); if (currentFilter === 'approved') filtered = allFeedback.filter(f => f.approved); document.getElementById('feedbackBody').innerHTML = filtered.map(fb => `<tr><td>${new Date(fb.createdAt).toLocaleDateString()}</td><td>${escapeHtml(fb.name)}</td><td class="rating-stars">${'★'.repeat(fb.rating || 0)}${'☆'.repeat(5 - (fb.rating || 0))}</td><td style="max-width: 300px;">${escapeHtml(fb.message.substring(0, 100))}${fb.message.length > 100 ? '...' : ''}</td><td><span class="badge ${fb.approved ? 'badge-approved' : 'badge-pending'}">${fb.approved ? 'Approved' : 'Pending'}</span></td><td>${!fb.approved ? `<button class="btn btn-success" onclick="approveFeedback('${fb._id}')"><i class="fas fa-check"></i> Approve</button>` : ''} <button class="btn btn-danger" onclick="deleteFeedback('${fb._id}')"><i class="fas fa-trash"></i> Delete</button></td></tr>`).join(''); }
-        async function approveFeedback(id) { await fetch(`/api/feedback/${id}/approve`, { method: 'PUT', headers: { 'Authorization': `Bearer ${token}` } }); loadFeedback(); showNotification('Feedback approved!', 'success'); }
-        async function deleteFeedback(id) { if (!confirm('Delete this feedback?')) return; await fetch(`/api/feedback/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); loadFeedback(); showNotification('Feedback deleted!', 'success'); }
-        function showNotification(message, type) { const n = document.createElement('div'); n.className = `notification notification-${type}`; n.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`; document.body.appendChild(n); setTimeout(() => { n.style.animation = 'slideInRight 0.3s ease reverse'; setTimeout(() => n.remove(), 300); }, 3000); }
-        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function (m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
-        document.querySelectorAll('.filter-btn').forEach(btn => { btn.addEventListener('click', () => { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentFilter = btn.dataset.filter; renderFeedback(); }); });
-        document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.removeItem('adminToken'); window.location.href = 'login.html'; });
+        
+        async function loadFeedback() {
+            const res = await fetch(`${API_URL}/api/feedback/all`, { headers: { 'Authorization': `Bearer ${token}` } });
+            allFeedback = await res.json();
+            renderFeedback();
+        }
+        
+        function renderFeedback() {
+            let filtered = allFeedback;
+            if (currentFilter === 'pending') filtered = allFeedback.filter(f => !f.approved);
+            if (currentFilter === 'approved') filtered = allFeedback.filter(f => f.approved);
+            document.getElementById('feedbackBody').innerHTML = filtered.map(fb => `
+                <tr>
+                    <td>${new Date(fb.createdAt).toLocaleDateString()}</td>
+                    <td>${escapeHtml(fb.name)}</td>
+                    <td>${'★'.repeat(fb.rating)}${'☆'.repeat(5-fb.rating)}</td>
+                    <td style="max-width:300px">${escapeHtml(fb.message.substring(0,100))}...</td>
+                    <td><span class="badge ${fb.approved ? 'badge-approved' : 'badge-pending'}">${fb.approved ? 'Approved' : 'Pending'}</span></td>
+                    <td>${!fb.approved ? `<button class="btn btn-success" onclick="approveFeedback('${fb._id}')">Approve</button>` : ''} <button class="btn btn-danger" onclick="deleteFeedback('${fb._id}')">Delete</button></td>
+                </tr>
+            `).join('');
+        }
+        
+        async function approveFeedback(id) {
+            await fetch(`${API_URL}/api/feedback/${id}/approve`, { method: 'PUT', headers: { 'Authorization': `Bearer ${token}` } });
+            loadFeedback();
+        }
+        
+        async function deleteFeedback(id) {
+            if (!confirm('Delete?')) return;
+            await fetch(`${API_URL}/api/feedback/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            loadFeedback();
+        }
+        
+        function filterFeedback(type) { currentFilter = type; renderFeedback(); }
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
+        
+        document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('adminToken'); window.location.href = 'login.html'; };
         loadFeedback();
     </script>
 </body>
-
 </html>
