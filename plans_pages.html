@@ -1,0 +1,261 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e_Touring | Adventure Plans</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1.5rem;
+            border: 2px solid var(--primary);
+            background: transparent;
+            color: var(--primary);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .plan-card {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            height: 100%;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .plan-icon {
+            background: var(--primary-bg);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .plan-icon i {
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+
+        .plan-content {
+            padding: 1.5rem;
+        }
+
+        .plan-content h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .plan-features li {
+            padding: 0.25rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .plan-features i {
+            color: var(--primary);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="images/logo.png" alt="e-Touring Logo">
+                <span>e_Touring</span>
+            </div>
+            <div class="menu-btn">☰</div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="events_page.html">Events</a>
+                <a href="plans_pages.html" class="active">Plans</a>
+                <a href="contact_us_page.html">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" style="height: 40vh; min-height: 300px;" data-aos="fade-in">
+            <img src="https://images.unsplash.com/photo-1532339142462-fd0a1e6e4f0f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+                alt="Adventure Plans" loading="lazy">
+            <div class="hero-content">
+                <h1>Plans & Activities</h1>
+                <p>Choose your perfect eco-adventure experience</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="filter-buttons" id="filterButtons">
+                <button class="filter-btn active" data-category="all">All</button>
+                <button class="filter-btn" data-category="Hiking">🥾 Hiking</button>
+                <button class="filter-btn" data-category="Sightseeing">🏛️ Sightseeing</button>
+                <button class="filter-btn" data-category="Cultural">🎭 Cultural</button>
+                <button class="filter-btn" data-category="Road trip">🚗 Road Trip</button>
+                <button class="filter-btn" data-category="Adventure">🧗 Adventure</button>
+                <button class="filter-btn" data-category="Religious Tour">⛪ Religious Tour</button>
+            </div>
+            <div class="grid-3" id="plansGrid"></div>
+        </section>
+
+        <section class="newsletter" data-aos="fade-up">
+            <div class="text-center">
+                <h3>Create Your Custom Adventure</h3>
+                <p>Don't see what you're looking for? We can create a custom plan tailored to your needs.</p>
+                <a href="contact_us_page.html" class="btn btn-outline">Contact Us</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>e_Touring</h4>
+                <p><i class="fas fa-envelope"></i> <a href="mailto:etouringleb@gmail.com">etouringleb@gmail.com</a></p>
+                <p><i class="fas fa-phone"></i> <a href="tel:+96170263067">+961 70 263 067</a></p>
+                <p><i class="fas fa-location-dot"></i> Beirut, Lebanon</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/e_touring_?igsh=MXhhd24xaDJueTU4cA==" aria-label="Instagram"><i
+                            class="fab fa-instagram"></i></a>
+                    <a href="https://whatsapp.com/channel/0029VbBjT8wEKyZH0PKo1I3C" aria-label="WhatsApp"><i
+                            class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="about.html"><i class="fas fa-chevron-right"></i> About Us</a></li>
+                    <li><a href="events_page.html"><i class="fas fa-chevron-right"></i> Events</a></li>
+                    <li><a href="plans_pages.html"><i class="fas fa-chevron-right"></i> Plans</a></li>
+                    <li><a href="contact_us_page.html"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 <strong>e_Touring</strong>. All rights reserved. Made with <i class="fas fa-heart"
+                    style="color: var(--primary);"></i> for Lebanon</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: true });
+
+        let allPlans = [];
+
+        async function loadPlans() {
+            try {
+                const res = await fetch('/api/plans');
+                allPlans = await res.json();
+                renderPlans('all');
+            } catch (error) {
+                console.error('Error loading plans:', error);
+                document.getElementById('plansGrid').innerHTML = '<p class="text-center">Unable to load plans. Please try again later.</p>';
+            }
+        }
+
+        function renderPlans(category) {
+            let filtered = allPlans;
+            if (category !== 'all') {
+                filtered = allPlans.filter(plan => plan.category === category);
+            }
+            const container = document.getElementById('plansGrid');
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="text-center">No plans available in this category. Check back soon!</p>';
+                return;
+            }
+            container.innerHTML = filtered.map((plan, index) => `
+                <div class="plan-card" data-aos="fade-up" data-aos-delay="${(index % 3) * 100}">
+                    <div class="plan-icon">
+                        <i class="fas ${getPlanIcon(plan.category)}"></i>
+                    </div>
+                    <div class="plan-content">
+                        <h3>${escapeHtml(plan.name)}</h3>
+                        <p><i class="fas fa-map-marker-alt" style="color: var(--primary);"></i> ${escapeHtml(plan.location || 'Lebanon')}</p>
+                        <p><i class="fas fa-clock" style="color: var(--primary);"></i> Duration: ${plan.duration || 'Flexible'}</p>
+                        <ul class="plan-features">
+                            ${plan.features ? plan.features.slice(0, 3).map(f => `<li><i class="fas fa-check-circle"></i> ${escapeHtml(f)}</li>`).join('') : '<li><i class="fas fa-check-circle"></i> Custom experience</li>'}
+                        </ul>
+                        <button class="btn" onclick="bookViaWhatsApp('${escapeHtml(plan.name)}')"><i class="fab fa-whatsapp"></i> Inquire via WhatsApp</button>
+                    </div>
+                </div>
+            `).join('');
+            AOS.refresh();
+        }
+
+        function getPlanIcon(category) {
+            const icons = {
+                'Hiking': 'fa-hiking',
+                'Sightseeing': 'fa-landmark',
+                'Cultural': 'fa-mask',
+                'Road trip': 'fa-car',
+                'Adventure': 'fa-mountain',
+                'Religious Tour': 'fa-church'
+            };
+            return icons[category] || 'fa-tree';
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function (m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        function bookViaWhatsApp(planName) {
+            const phoneNumber = '96170263067';
+            const message = `Hello! I'm interested in the plan: ${planName}. Can you please provide more information about pricing and availability?`;
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                renderPlans(this.dataset.category);
+            });
+        });
+
+        loadPlans();
+    </script>
+</body>
+
+</html>

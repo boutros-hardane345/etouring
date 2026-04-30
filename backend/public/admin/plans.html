@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Plans | e_Touring Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="admin-style.css">
+    <style>
+        .image-preview {
+            margin-top: 10px;
+            position: relative;
+            display: inline-block;
+        }
+        .image-preview img {
+            width: 150px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid var(--admin-primary);
+        }
+        .image-preview .remove-image {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .upload-progress {
+            display: none;
+            margin-top: 10px;
+            color: var(--admin-primary);
+        }
+        .features-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .feature-tag {
+            background: var(--admin-primary-bg);
+            color: var(--admin-primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .feature-tag i { cursor: pointer; }
+        .feature-tag i:hover { color: var(--admin-danger); }
+        .feature-input-group { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+        .table-image { width: 50px; height: 40px; object-fit: cover; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="admin-wrapper">
+        <aside class="sidebar">
+            <div class="logo"><i class="fas fa-tree"></i> e_Touring</div>
+            <ul class="nav-menu">
+                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                <li><a href="plans.html" class="active"><i class="fas fa-map-marked-alt"></i> Plans</a></li>
+                <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> Feedback</a></li>
+                <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="section-header">
+                <h2><i class="fas fa-map-marked-alt"></i> Manage Plans</h2>
+                <button class="btn btn-primary" id="addPlanBtn"><i class="fas fa-plus"></i> Add Plan</button>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Location</th><th>Actions</th></tr></thead>
+                    <tbody id="plansBody"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Plan Modal -->
+    <div id="planModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('planModal')">&times;</span>
+            <h3 id="modalTitle">Add Plan</h3>
+            <input type="hidden" id="planId">
+            
+            <div class="form-group"><label><i class="fas fa-heading"></i> Name *</label><input type="text" id="planName" class="form-control" required></div>
+            <div class="form-group"><label><i class="fas fa-tag"></i> Category</label><select id="planCategory" class="form-control"><option>Hiking</option><option>Road trip</option><option>Religious Tour</option><option>Sightseeing</option><option>Adventure</option><option>Cultural</option></select></div>
+            <div class="form-group"><label><i class="fas fa-signal"></i> Difficulty</label><select id="planDifficulty" class="form-control"><option>Easy</option><option>Moderate</option><option>Difficult</option></select></div>
+            <div class="form-group"><label><i class="fas fa-map-marker-alt"></i> Location</label><input type="text" id="planLocation" class="form-control"></div>
+            <div class="form-group"><label><i class="fas fa-ruler"></i> Distance</label><input type="text" id="planDistance" placeholder="e.g., 10 km" class="form-control"></div>
+            <div class="form-group"><label><i class="fas fa-clock"></i> Duration</label><input type="text" id="planDuration" placeholder="e.g., 3-4 hours" class="form-control"></div>
+            <div class="form-group"><label><i class="fas fa-align-left"></i> Description</label><textarea id="planDescription" rows="2" class="form-control"></textarea></div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-list"></i> Features</label>
+                <div class="feature-input-group"><input type="text" id="featureInput" class="form-control" placeholder="Add feature"><button type="button" id="addFeatureBtn" class="btn btn-primary" style="padding: 0.5rem 1rem;">+</button></div>
+                <div id="featuresList" class="features-list"></div>
+                <input type="hidden" id="featuresArray">
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-image"></i> Plan Image</label>
+                <input type="file" id="planImageFile" accept="image/*" class="form-control">
+                <div class="upload-progress" id="uploadProgress"><i class="fas fa-spinner fa-pulse"></i> Uploading...</div>
+                <div id="imagePreview" class="image-preview"></div>
+                <input type="hidden" id="planImage" value="">
+            </div>
+            
+            <div class="form-group"><label><input type="checkbox" id="planPopular"> Popular</label></div>
+            <button class="btn btn-primary" onclick="savePlan()"><i class="fas fa-save"></i> Save Plan</button>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('adminToken');
+        if (!token) window.location.href = 'login.html';
+        
+        let allPlans = [], featuresTemp = [];
+        
+        function renderFeaturesTags() {
+            document.getElementById('featuresList').innerHTML = featuresTemp.map((f, idx) => `<span class="feature-tag">${escapeHtml(f)} <i class="fas fa-times-circle" onclick="removeFeature(${idx})"></i></span>`).join('');
+            document.getElementById('featuresArray').value = JSON.stringify(featuresTemp);
+        }
+        window.removeFeature = function(idx) { featuresTemp.splice(idx, 1); renderFeaturesTags(); };
+        document.getElementById('addFeatureBtn').onclick = () => { const val = document.getElementById('featureInput').value.trim(); if (val) { featuresTemp.push(val); renderFeaturesTags(); document.getElementById('featureInput').value = ''; } };
+        
+        // Image upload handling
+        document.getElementById('planImageFile').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) { alert('Please select an image file'); return; }
+            if (file.size > 5 * 1024 * 1024) { alert('Image must be less than 5MB'); return; }
+            
+            const formData = new FormData();
+            formData.append('image', file);
+            document.getElementById('uploadProgress').style.display = 'block';
+            
+            try {
+                const res = await fetch('/api/upload/plan', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    document.getElementById('planImage').value = data.imageUrl;
+                    showImagePreview(data.imageUrl);
+                    showNotification('Image uploaded!', 'success');
+                } else { alert('Upload failed: ' + data.message); }
+            } catch (err) { alert('Upload error: ' + err.message); }
+            finally { document.getElementById('uploadProgress').style.display = 'none'; }
+        });
+        
+        function showImagePreview(imageUrl) {
+            document.getElementById('imagePreview').innerHTML = `<img src="${imageUrl}" alt="Preview"><button class="remove-image" onclick="removeImage()">✕</button>`;
+        }
+        
+        function removeImage() {
+            document.getElementById('planImage').value = '';
+            document.getElementById('imagePreview').innerHTML = '';
+            document.getElementById('planImageFile').value = '';
+        }
+        
+        async function loadPlans() {
+            const res = await fetch('/api/plans');
+            allPlans = await res.json();
+            document.getElementById('plansBody').innerHTML = allPlans.map(p => `
+                <tr>
+                    <td>${p.image ? `<img src="${p.image}" class="table-image">` : 'No image'}</td>
+                    <td>${escapeHtml(p.name)}</td>
+                    <td>${p.category || '-'}</td>
+                    <td>${p.location || '-'}</td>
+                    <td><button class="btn btn-warning" onclick="editPlan('${p._id}')"><i class="fas fa-edit"></i> Edit</button>
+                           <button class="btn btn-danger" onclick="deletePlan('${p._id}')"><i class="fas fa-trash"></i> Delete</button></td>
+                 `
+            ).join('');
+        }
+        
+        async function deletePlan(id) {
+            if (!confirm('Delete this plan?')) return;
+            await fetch(`/api/plans/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            loadPlans();
+            showNotification('Plan deleted!', 'success');
+        }
+        
+        function editPlan(id) {
+            const p = allPlans.find(p => p._id === id);
+            document.getElementById('planId').value = p._id;
+            document.getElementById('planName').value = p.name;
+            document.getElementById('planCategory').value = p.category || 'Hiking';
+            document.getElementById('planDifficulty').value = p.difficulty || 'Easy';
+            document.getElementById('planLocation').value = p.location || '';
+            document.getElementById('planDistance').value = p.distance || '';
+            document.getElementById('planDuration').value = p.duration || '';
+            document.getElementById('planDescription').value = p.description || '';
+            featuresTemp = p.features || [];
+            renderFeaturesTags();
+            document.getElementById('planPopular').checked = p.popular || false;
+            if (p.image) { document.getElementById('planImage').value = p.image; showImagePreview(p.image); }
+            else { removeImage(); }
+            document.getElementById('modalTitle').innerText = 'Edit Plan';
+            document.getElementById('planModal').style.display = 'flex';
+        }
+        
+        async function savePlan() {
+            const id = document.getElementById('planId').value;
+            const payload = {
+                name: document.getElementById('planName').value,
+                category: document.getElementById('planCategory').value,
+                difficulty: document.getElementById('planDifficulty').value,
+                location: document.getElementById('planLocation').value,
+                distance: document.getElementById('planDistance').value,
+                duration: document.getElementById('planDuration').value,
+                description: document.getElementById('planDescription').value,
+                features: featuresTemp,
+                image: document.getElementById('planImage').value,
+                popular: document.getElementById('planPopular').checked
+            };
+            const url = id ? `/api/plans/${id}` : '/api/plans';
+            const method = id ? 'PUT' : 'POST';
+            const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) });
+            if (res.ok) {
+                closeModal('planModal');
+                loadPlans();
+                showNotification(id ? 'Plan updated!' : 'Plan created!', 'success');
+            } else { showNotification('Error saving plan', 'error'); }
+        }
+        
+        function showNotification(message, type) {
+            const n = document.createElement('div');
+            n.className = `notification notification-${type}`;
+            n.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+            document.body.appendChild(n);
+            setTimeout(() => { n.style.animation = 'slideInRight 0.3s ease reverse'; setTimeout(() => n.remove(), 300); }, 3000);
+        }
+        
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
+        
+        document.getElementById('addPlanBtn').onclick = () => {
+            document.getElementById('planId').value = '';
+            document.getElementById('modalTitle').innerText = 'Add Plan';
+            document.getElementById('planModal').style.display = 'flex';
+            featuresTemp = [];
+            renderFeaturesTags();
+            removeImage();
+        };
+        document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('adminToken'); window.location.href = 'login.html'; };
+        window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
+        loadPlans();
+    </script>
+</body>
+</html>

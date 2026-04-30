@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e_Touring | Events</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="images/logo.png" alt="e-Touring Logo">
+                <span>e_Touring</span>
+            </div>
+            <div class="menu-btn">☰</div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="events_page.html" class="active">Events</a>
+                <a href="plans_pages.html">Plans</a>
+                <a href="contact_us_page.html">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" style="height: 40vh; min-height: 300px;" data-aos="fade-in">
+            <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80" alt="Events" loading="lazy">
+            <div class="hero-content">
+                <h1>Our Events</h1>
+                <p>Discover upcoming eco-adventures and activities</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="events-grid grid" id="eventsGrid"></div>
+        </section>
+
+        <section class="newsletter" data-aos="fade-up">
+            <div class="text-center">
+                <h3>Want to organize an event?</h3>
+                <p>We're always looking for partners and volunteers to help organize eco-events</p>
+                <a href="contact_us_page.html" class="btn btn-outline">Contact Us</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>e_Touring</h4>
+                <p><i class="fas fa-envelope"></i> <a href="mailto:etouringleb@gmail.com">etouringleb@gmail.com</a></p>
+                <p><i class="fas fa-phone"></i> <a href="tel:+96170263067">+961 70 263 067</a></p>
+                <p><i class="fas fa-location-dot"></i> Beirut, Lebanon</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/e_touring_?igsh=MXhhd24xaDJueTU4cA==" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://whatsapp.com/channel/0029VbBjT8wEKyZH0PKo1I3C" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="about.html"><i class="fas fa-chevron-right"></i> About Us</a></li>
+                    <li><a href="events_page.html"><i class="fas fa-chevron-right"></i> Events</a></li>
+                    <li><a href="plans_pages.html"><i class="fas fa-chevron-right"></i> Plans</a></li>
+                    <li><a href="contact_us_page.html"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 <strong>e_Touring</strong>. All rights reserved. Made with <i class="fas fa-heart" style="color: var(--primary);"></i> for Lebanon</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: true });
+
+        async function loadEvents() {
+            try {
+                const res = await fetch('/api/events');
+                const events = await res.json();
+                const grid = document.getElementById('eventsGrid');
+                if (events.length === 0) {
+                    grid.innerHTML = '<p class="text-center">No events available. Check back soon!</p>';
+                    return;
+                }
+                grid.innerHTML = events.map((event, index) => `
+                    <div class="card" data-aos="fade-up" data-aos-delay="${(index % 3) * 100}">
+                        ${event.badge ? `<span class="card-badge">${escapeHtml(event.badge)}</span>` : ''}
+                        <img src="${event.image || 'https://images.unsplash.com/photo-1501785888041-af3ef285b470'}" alt="${event.title}" class="card-img" loading="lazy">
+                        <div class="card-content">
+                            <h3 class="card-title">${escapeHtml(event.title)}</h3>
+                            <p><i class="fas fa-calendar" style="color: var(--primary);"></i> ${event.date || 'Date TBA'}</p>
+                            <p><i class="fas fa-clock" style="color: var(--primary);"></i> ${event.time || 'Time TBA'}</p>
+                            <p><i class="fas fa-map-marker-alt" style="color: var(--primary);"></i> ${event.location || 'Lebanon'}</p>
+                            <p><i class="fas fa-signal" style="color: var(--primary);"></i> Difficulty: ${event.difficulty || 'Medium'}</p>
+                            <p class="mt-2">${escapeHtml(event.description || '')}</p>
+                            <button class="btn mt-3" onclick="bookViaWhatsApp('${escapeHtml(event.title)}')"><i class="fab fa-whatsapp"></i> Book via WhatsApp</button>
+                        </div>
+                    </div>
+                `).join('');
+                AOS.refresh();
+            } catch (error) {
+                console.error('Error loading events:', error);
+                document.getElementById('eventsGrid').innerHTML = '<p class="text-center">Unable to load events. Please try again later.</p>';
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        function bookViaWhatsApp(itemName) {
+            const phoneNumber = '96170263067';
+            const message = `Hello! I'm interested in booking the event: ${itemName}. Can you please provide more information?`;
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        loadEvents();
+    </script>
+</body>
+</html>

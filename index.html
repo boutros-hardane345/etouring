@@ -1,0 +1,247 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e_Touring | Eco Adventure Lebanon</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="images/logo.png" alt="e-Touring Logo">
+                <span>e_Touring</span>
+            </div>
+            <div class="menu-btn">☰</div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="events_page.html">Events</a>
+                <a href="plans_pages.html">Plans</a>
+                <a href="contact_us_page.html">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" data-aos="fade-in">
+            <img src="images/home_photo.jpg" alt="Lebanon Nature" loading="lazy">
+            <div class="hero-content">
+                <h1>Far from the Noise, <br>Closer to Life</h1>
+                <p>Hiking, camping, and unforgettable nature experiences with e_touring.</p>
+                <div class="mt-3">
+                    <a href="events_page.html" class="btn">View Events</a>
+                    <a href="contact_us_page.html" class="btn btn-outline">Contact Us</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-title" data-aos="fade-up">
+                <h2>Why Choose e_Touring?</h2>
+                <p>We offer unique eco-friendly experiences across Lebanon</p>
+            </div>
+            <div class="grid-4">
+                <div class="card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-content text-center">
+                        <i class="fas fa-leaf" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <h3>Sustainable Tourism</h3>
+                        <p>We promote responsible travel that conserves the environment and improves local communities.</p>
+                    </div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-content text-center">
+                        <i class="fas fa-hiking" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <h3>Expert Guides</h3>
+                        <p>Our certified guides ensure safe and educational adventures in Lebanon's most beautiful locations.</p>
+                    </div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card-content text-center">
+                        <i class="fas fa-tree" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <h3>Conservation Focus</h3>
+                        <p>Part of your participation goes towards preserving Lebanon's natural heritage.</p>
+                    </div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="400">
+                    <div class="card-content text-center">
+                        <i class="fas fa-users" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <h3>Community Impact</h3>
+                        <p>We work with local communities to create lasting positive change.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-title" data-aos="fade-up">
+                <h2>Upcoming Events</h2>
+                <p>Join our next eco-adventures</p>
+            </div>
+            <div class="events-grid grid" id="eventsGrid"></div>
+            <div class="text-center mt-4" data-aos="fade-up">
+                <a href="events_page.html" class="btn">View All Events</a>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-title" data-aos="fade-up">
+                <h2>What Our Participants Say</h2>
+                <p>Real experiences from real people</p>
+            </div>
+            <div class="testimonials" id="testimonialsContainer"></div>
+        </section>
+
+        <section class="newsletter" data-aos="fade-up">
+            <div class="text-center">
+                <h3>Stay Updated</h3>
+                <p>Subscribe to our newsletter for the latest events and eco-tips</p>
+                <form class="newsletter-form" id="newsletterForm">
+                    <input type="email" placeholder="Your email address" required>
+                    <button type="submit">Subscribe</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>e_Touring</h4>
+                <p>
+                    <i class="fas fa-envelope"></i>
+                    <a href="mailto:etouringleb@gmail.com">etouringleb@gmail.com</a>
+                </p>
+                <p>
+                    <i class="fas fa-phone"></i>
+                    <a href="tel:+96170263067">+961 70 263 067</a>
+                </p>
+                <p><i class="fas fa-location-dot"></i> Beirut, Lebanon</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/e_touring_?igsh=MXhhd24xaDJueTU4cA==" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://whatsapp.com/channel/0029VbBjT8wEKyZH0PKo1I3C" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="about.html"><i class="fas fa-chevron-right"></i> About Us</a></li>
+                    <li><a href="events_page.html"><i class="fas fa-chevron-right"></i> Events</a></li>
+                    <li><a href="plans_pages.html"><i class="fas fa-chevron-right"></i> Plans</a></li>
+                    <li><a href="contact_us_page.html"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 <strong>e_Touring</strong>. All rights reserved. Made with <i class="fas fa-heart"
+                    style="color: var(--primary);"></i> for Lebanon</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: true });
+
+        // WhatsApp booking function
+        function bookViaWhatsApp(itemName) {
+            const phoneNumber = '96170263067';
+            const message = `Hello! I'm interested in booking: ${itemName}. Can you please provide more information?`;
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Load events from API
+        async function loadEvents() {
+            try {
+                const res = await fetch('/api/events');
+                const events = await res.json();
+                const eventsGrid = document.getElementById('eventsGrid');
+                if (eventsGrid) {
+                    if (events.length === 0) {
+                        eventsGrid.innerHTML = '<p class="text-center">No events available. Check back soon!</p>';
+                    } else {
+                        eventsGrid.innerHTML = events.slice(0, 3).map((event, index) => `
+                            <div class="card" data-aos="fade-up" data-aos-delay="${index * 100}">
+                                <img src="${event.image || 'https://images.unsplash.com/photo-1501785888041-af3ef285b470'}" alt="${event.title}" class="card-img" loading="lazy">
+                                <div class="card-content">
+                                    <h3 class="card-title">${escapeHtml(event.title)}</h3>
+                                    <p><i class="fas fa-calendar" style="color: var(--primary);"></i> ${event.date || 'Date TBA'}</p>
+                                    <p><i class="fas fa-map-marker-alt" style="color: var(--primary);"></i> ${event.location || 'Lebanon'}</p>
+                                    <p class="mt-2">${escapeHtml(event.description || '').substring(0, 100)}${event.description && event.description.length > 100 ? '...' : ''}</p>
+                                    <button class="btn mt-3" onclick="bookViaWhatsApp('${escapeHtml(event.title)}')"><i class="fab fa-whatsapp"></i> Book via WhatsApp</button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading events:', error);
+                const eventsGrid = document.getElementById('eventsGrid');
+                if (eventsGrid) {
+                    eventsGrid.innerHTML = '<p class="text-center">Unable to load events. Please try again later.</p>';
+                }
+            }
+        }
+
+        // Load testimonials from API
+        async function loadTestimonials() {
+            try {
+                const res = await fetch('/api/feedback');
+                const feedbacks = await res.json();
+                const container = document.getElementById('testimonialsContainer');
+                if (container) {
+                    if (feedbacks.length === 0) {
+                        container.innerHTML = '<p class="text-center">No testimonials yet. Be the first to share your experience!</p>';
+                    } else {
+                        container.innerHTML = feedbacks.slice(0, 3).map((fb, index) => `
+                            <div class="testimonial-card" data-aos="fade-up" data-aos-delay="${index * 100}">
+                                <p class="testimonial-text">"${escapeHtml(fb.message)}"</p>
+                                <div class="testimonial-author">
+                                    <div>
+                                        <h4>${escapeHtml(fb.name)}</h4>
+                                        <p class="text-primary">⭐ ${'★'.repeat(fb.rating || 0)}${'☆'.repeat(5 - (fb.rating || 0))}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+                if (typeof AOS !== 'undefined') AOS.refresh();
+            } catch (error) {
+                console.error('Error loading testimonials:', error);
+            }
+        }
+
+        // Newsletter subscription
+        document.getElementById('newsletterForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = this.querySelector('input[type="email"]').value;
+            if (email) {
+                alert('Thank you for subscribing! You will receive our updates.');
+                this.reset();
+            }
+        });
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        loadEvents();
+        loadTestimonials();
+    </script>
+</body>
+</html>
