@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Events | e_Touring</title>
+    <title>Manage Plans | e_Touring</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="admin-style.css">
@@ -12,6 +12,9 @@
         .image-preview img { width: 150px; height: 120px; object-fit: cover; border-radius: 8px; border: 2px solid var(--admin-primary); }
         .image-preview .remove-image { position: absolute; top: -10px; right: -10px; background: #dc3545; color: white; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .upload-progress { display: none; margin-top: 10px; color: var(--admin-primary); }
+        .features-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+        .feature-tag { background: var(--admin-primary-bg); color: var(--admin-primary); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .feature-input-group { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
         .table-image { width: 50px; height: 40px; object-fit: cover; border-radius: 5px; }
     </style>
 </head>
@@ -20,114 +23,114 @@
         <aside class="sidebar"><div class="logo"><i class="fas fa-tree"></i> e_Touring</div>
             <ul class="nav-menu">
                 <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li><a href="events.html" class="active"><i class="fas fa-calendar-alt"></i> Events</a></li>
-                <li><a href="plans.html"><i class="fas fa-map-marked-alt"></i> Plans</a></li>
+                <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                <li><a href="plans.html" class="active"><i class="fas fa-map-marked-alt"></i> Plans</a></li>
                 <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> Feedback</a></li>
                 <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
             </ul>
         </aside>
         <main class="main-content">
-            <div class="section-header"><h2>Manage Events</h2><button class="btn btn-primary" id="addEventBtn"><i class="fas fa-plus"></i> Add Event</button></div>
-            <div class="table-container"><table class="table"><thead><tr><th>Image</th><th>Title</th><th>Date</th><th>Location</th><th>Actions</th></tr></thead><tbody id="eventsBody"></tbody></table></div>
+            <div class="section-header"><h2>Manage Plans</h2><button class="btn btn-primary" id="addPlanBtn"><i class="fas fa-plus"></i> Add Plan</button></div>
+            <div class="table-container"><table class="table"><thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Location</th><th>Actions</th></tr></thead><tbody id="plansBody"></tbody></table></div>
         </main>
     </div>
 
-    <div id="eventModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('eventModal')">&times;</span><h3 id="modalTitle">Add Event</h3>
-        <input type="hidden" id="eventId">
-        <div class="form-group"><input type="text" id="eventTitle" placeholder="Title *" class="form-control" required></div>
-        <div class="form-group"><input type="text" id="eventDate" placeholder="Date (Mar 20, 2026)" class="form-control"></div>
-        <div class="form-group"><input type="text" id="eventTime" placeholder="Time (8:00 AM)" class="form-control"></div>
-        <div class="form-group"><input type="text" id="eventLocation" placeholder="Location" class="form-control"></div>
-        <div class="form-group"><textarea id="eventDescription" rows="3" placeholder="Description" class="form-control"></textarea></div>
-        <div class="form-group"><input type="text" id="eventPrice" placeholder="Price" class="form-control"></div>
-        <div class="form-group"><select id="eventDifficulty" class="form-control"><option>Easy</option><option>Medium</option><option>Hard</option></select></div>
-        <div class="form-group"><select id="eventCategory" class="form-control"><option>hiking</option><option>cleanup</option><option>camping</option><option>workshop</option></select></div>
-        <div class="form-group"><input type="file" id="eventImageFile" accept="image/*" class="form-control"><div class="upload-progress" id="uploadProgress"><i class="fas fa-spinner fa-pulse"></i> Uploading...</div><div id="imagePreview" class="image-preview"></div><input type="hidden" id="eventImage"></div>
-        <button class="btn btn-primary" onclick="saveEvent()">Save Event</button>
+    <div id="planModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('planModal')">&times;</span><h3 id="modalTitle">Add Plan</h3>
+        <input type="hidden" id="planId">
+        <div class="form-group"><input type="text" id="planName" placeholder="Plan Name *" class="form-control" required></div>
+        <div class="form-group"><select id="planCategory" class="form-control"><option>Hiking</option><option>Road trip</option><option>Religious Tour</option><option>Sightseeing</option><option>Adventure</option><option>Cultural</option></select></div>
+        <div class="form-group"><select id="planDifficulty" class="form-control"><option>Easy</option><option>Moderate</option><option>Difficult</option></select></div>
+        <div class="form-group"><input type="text" id="planLocation" placeholder="Location" class="form-control"></div>
+        <div class="form-group"><input type="text" id="planDescription" placeholder="Description" class="form-control"></div>
+        <div class="form-group"><div class="feature-input-group"><input type="text" id="featureInput" class="form-control" placeholder="Add feature"><button type="button" id="addFeatureBtn" class="btn btn-primary">+</button></div><div id="featuresList" class="features-list"></div><input type="hidden" id="featuresArray"></div>
+        <div class="form-group"><input type="file" id="planImageFile" accept="image/*" class="form-control"><div class="upload-progress" id="uploadProgress"><i class="fas fa-spinner fa-pulse"></i> Uploading...</div><div id="imagePreview" class="image-preview"></div><input type="hidden" id="planImage"></div>
+        <div class="form-group"><label><input type="checkbox" id="planPopular"> Popular</label></div>
+        <button class="btn btn-primary" onclick="savePlan()">Save Plan</button>
     </div></div>
 
     <script>
-        const API_URL = localStorage.getItem('API_BASE_URL') || 'https://etouring-backend.onrender.com';
+        const API_URL = localStorage.getItem('API_BASE_URL') || 'https://e-touring-vdye.onrender.com';
         const token = localStorage.getItem('adminToken');
         if (!token) window.location.href = 'login.html';
         
-        let events = [];
+        let allPlans = [], featuresTemp = [];
         
-        document.getElementById('eventImageFile').addEventListener('change', async function(e) {
+        function renderFeaturesTags() {
+            document.getElementById('featuresList').innerHTML = featuresTemp.map((f, idx) => `<span class="feature-tag">${escapeHtml(f)} <i class="fas fa-times-circle" onclick="removeFeature(${idx})"></i></span>`).join('');
+            document.getElementById('featuresArray').value = JSON.stringify(featuresTemp);
+        }
+        window.removeFeature = function(idx) { featuresTemp.splice(idx, 1); renderFeaturesTags(); };
+        document.getElementById('addFeatureBtn').onclick = () => { const val = document.getElementById('featureInput').value.trim(); if (val) { featuresTemp.push(val); renderFeaturesTags(); document.getElementById('featureInput').value = ''; } };
+        
+        document.getElementById('planImageFile').addEventListener('change', async function(e) {
             const file = e.target.files[0];
-            if (!file || !file.type.startsWith('image/')) { alert('Select an image'); return; }
-            if (file.size > 5*1024*1024) { alert('Max 5MB'); return; }
-            const formData = new FormData();
-            formData.append('image', file);
+            if (!file || !file.type.startsWith('image/')) { alert('Select image'); return; }
+            const formData = new FormData(); formData.append('image', file);
             document.getElementById('uploadProgress').style.display = 'block';
             try {
-                const res = await fetch(`${API_URL}/api/upload/event`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData });
+                const res = await fetch(`${API_URL}/api/upload/plan`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData });
                 const data = await res.json();
-                if (res.ok) { document.getElementById('eventImage').value = data.imageUrl; showImagePreview(data.imageUrl); }
-                else alert('Upload failed');
+                if (res.ok) { document.getElementById('planImage').value = data.imageUrl; showImagePreview(data.imageUrl); }
             } catch(err) { alert('Upload error'); }
             finally { document.getElementById('uploadProgress').style.display = 'none'; }
         });
         
-        function showImagePreview(url) { document.getElementById('imagePreview').innerHTML = `<img src="${url}"><button class="remove-image" onclick="removeImage()">✕</button>`; }
-        function removeImage() { document.getElementById('eventImage').value = ''; document.getElementById('imagePreview').innerHTML = ''; document.getElementById('eventImageFile').value = ''; }
+        function showImagePreview(url) { document.getElementById('imagePreview').innerHTML = `<img src="${API_URL}${url}"><button class="remove-image" onclick="removeImage()">✕</button>`; }
+        function removeImage() { document.getElementById('planImage').value = ''; document.getElementById('imagePreview').innerHTML = ''; }
         
-        async function loadEvents() {
-            const res = await fetch(`${API_URL}/api/events`);
-            events = await res.json();
-            document.getElementById('eventsBody').innerHTML = events.map(e => `<tr><td>${e.image ? `<img src="${e.image}" class="table-image">` : '-'}</td><td>${escapeHtml(e.title)}</td><td>${e.date || '-'}</td><td>${e.location || '-'}</td><td><button class="btn btn-warning" onclick="editEvent('${e._id}')">Edit</button> <button class="btn btn-danger" onclick="deleteEvent('${e._id}')">Delete</button></td></tr>`).join('');
+        async function loadPlans() {
+            const res = await fetch(`${API_URL}/api/plans`);
+            allPlans = await res.json();
+            document.getElementById('plansBody').innerHTML = allPlans.map(p => `<tr><td>${p.image ? `<img src="${API_URL}${p.image}" class="table-image">` : '-'}</td><td>${escapeHtml(p.name)}</td><td>${p.category || '-'}</td><td>${p.location || '-'}</td><td><button class="btn btn-warning" onclick="editPlan('${p._id}')">Edit</button> <button class="btn btn-danger" onclick="deletePlan('${p._id}')">Delete</button></td></tr>`).join('');
         }
         
-        async function deleteEvent(id) {
+        async function deletePlan(id) {
             if (!confirm('Delete?')) return;
-            await fetch(`${API_URL}/api/events/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
-            loadEvents();
+            await fetch(`${API_URL}/api/plans/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            loadPlans();
         }
         
-        function editEvent(id) {
-            const e = events.find(e => e._id === id);
-            document.getElementById('eventId').value = e._id;
-            document.getElementById('eventTitle').value = e.title;
-            document.getElementById('eventDate').value = e.date || '';
-            document.getElementById('eventTime').value = e.time || '';
-            document.getElementById('eventLocation').value = e.location || '';
-            document.getElementById('eventDescription').value = e.description || '';
-            document.getElementById('eventPrice').value = e.price || '';
-            document.getElementById('eventDifficulty').value = e.difficulty || 'Medium';
-            document.getElementById('eventCategory').value = e.category || 'hiking';
-            if (e.image) { document.getElementById('eventImage').value = e.image; showImagePreview(e.image); }
-            document.getElementById('modalTitle').innerText = 'Edit Event';
-            document.getElementById('eventModal').style.display = 'flex';
+        function editPlan(id) {
+            const p = allPlans.find(p => p._id === id);
+            document.getElementById('planId').value = p._id;
+            document.getElementById('planName').value = p.name;
+            document.getElementById('planCategory').value = p.category || 'Hiking';
+            document.getElementById('planDifficulty').value = p.difficulty || 'Easy';
+            document.getElementById('planLocation').value = p.location || '';
+            document.getElementById('planDescription').value = p.description || '';
+            featuresTemp = p.features || []; renderFeaturesTags();
+            document.getElementById('planPopular').checked = p.popular || false;
+            if (p.image) { document.getElementById('planImage').value = p.image; showImagePreview(p.image); }
+            document.getElementById('modalTitle').innerText = 'Edit Plan';
+            document.getElementById('planModal').style.display = 'flex';
         }
         
-        async function saveEvent() {
-            const id = document.getElementById('eventId').value;
-            const event = {
-                title: document.getElementById('eventTitle').value,
-                date: document.getElementById('eventDate').value,
-                time: document.getElementById('eventTime').value,
-                location: document.getElementById('eventLocation').value,
-                description: document.getElementById('eventDescription').value,
-                price: document.getElementById('eventPrice').value,
-                difficulty: document.getElementById('eventDifficulty').value,
-                category: document.getElementById('eventCategory').value,
-                image: document.getElementById('eventImage').value
+        async function savePlan() {
+            const id = document.getElementById('planId').value;
+            const payload = {
+                name: document.getElementById('planName').value,
+                category: document.getElementById('planCategory').value,
+                difficulty: document.getElementById('planDifficulty').value,
+                location: document.getElementById('planLocation').value,
+                description: document.getElementById('planDescription').value,
+                features: featuresTemp,
+                image: document.getElementById('planImage').value,
+                popular: document.getElementById('planPopular').checked
             };
-            const url = id ? `${API_URL}/api/events/${id}` : `${API_URL}/api/events`;
+            const url = id ? `${API_URL}/api/plans/${id}` : `${API_URL}/api/plans`;
             const method = id ? 'PUT' : 'POST';
-            const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(event) });
-            if (res.ok) { closeModal('eventModal'); loadEvents(); showNotification(id ? 'Updated' : 'Created'); }
-            else alert('Error');
+            const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) });
+            if (res.ok) { closeModal('planModal'); loadPlans(); alert('Saved!'); }
+            else alert('Error saving plan');
         }
         
-        function showNotification(msg) { alert(msg); }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
         
-        document.getElementById('addEventBtn').onclick = () => { document.getElementById('eventId').value = ''; document.getElementById('modalTitle').innerText = 'Add Event'; document.getElementById('eventModal').style.display = 'flex'; removeImage(); };
+        document.getElementById('addPlanBtn').onclick = () => { document.getElementById('planId').value = ''; featuresTemp = []; renderFeaturesTags(); removeImage(); document.getElementById('modalTitle').innerText = 'Add Plan'; document.getElementById('planModal').style.display = 'flex'; };
         document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('adminToken'); window.location.href = 'login.html'; };
         window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
-        loadEvents();
+        loadPlans();
     </script>
 </body>
 </html>
