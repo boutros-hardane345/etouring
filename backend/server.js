@@ -10,20 +10,18 @@ const app = express();
 
 // ============ MIDDLEWARE ============
 app.use(cors({
-  origin: ['http://localhost:5000', 'http://localhost:3000', 'https://etouring-website.netlify.app', 'https://etouring-backend.onrender.com'],
+  origin: '*',
   credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ============ FILE UPLOAD SETUP ============
-// Create uploads folder if it doesn't exist
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Configure multer for image uploads
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, uploadDir);
@@ -34,12 +32,10 @@ const storage = multer.diskStorage({
     }
 });
 
-// File filter for images only
 const fileFilter = (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|webp/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
-    
     if (mimetype && extname) {
         return cb(null, true);
     } else {
@@ -49,19 +45,15 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: fileFilter
 });
 
 // ============ STATIC FILE SERVING ============
-// Serve frontend files (for production)
-const frontendPath = path.join(__dirname, '..');
-app.use(express.static(frontendPath));
-
-// Serve uploaded images statically
+// Serve uploaded images
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Serve admin files
+// Serve admin panel
 app.use('/admin', express.static(path.join(__dirname, 'public/admin')));
 
 // ============ MONGODB MODELS ============
@@ -125,8 +117,6 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/etouri
 mongoose.connect(MONGODB_URI)
   .then(async () => {
     console.log('✅ MongoDB connected successfully');
-    
-    // Create default admin if not exists (only in production)
     try {
       const bcrypt = require('bcrypt');
       const adminExists = await Admin.findOne({ username: 'admin' });
@@ -149,20 +139,16 @@ app.post('/api/auth/login', async (req, res) => {
   const { username, password } = req.body;
   try {
     const admin = await Admin.findOne({ username });
-    if (!admin) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-    
+    if (!admin) return res.status(401).json({ message: 'Invalid credentials' });
+
     const bcrypt = require('bcrypt');
     const isValid = await bcrypt.compare(password, admin.password);
-    if (!isValid) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-    
+    if (!isValid) return res.status(401).json({ message: 'Invalid credentials' });
+
     const jwt = require('jsonwebtoken');
     const token = jwt.sign(
-      { id: admin._id, username: admin.username }, 
-      process.env.JWT_SECRET || 'secretkey', 
+      { id: admin._id, username: admin.username },
+      process.env.JWT_SECRET || 'secretkey',
       { expiresIn: '1d' }
     );
     res.json({ token, message: 'Login successful' });
@@ -174,11 +160,9 @@ app.post('/api/auth/login', async (req, res) => {
 // ============ IMAGE UPLOAD ROUTES ============
 app.post('/api/upload/event', upload.single('image'), async (req, res) => {
     try {
-        if (!req.file) {
-            return res.status(400).json({ message: 'No file uploaded' });
-        }
+        if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
         const imageUrl = `/uploads/${req.file.filename}`;
-        res.json({ imageUrl: imageUrl, message: 'Image uploaded successfully' });
+        res.json({ imageUrl, message: 'Image uploaded successfully' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -186,11 +170,9 @@ app.post('/api/upload/event', upload.single('image'), async (req, res) => {
 
 app.post('/api/upload/plan', upload.single('image'), async (req, res) => {
     try {
-        if (!req.file) {
-            return res.status(400).json({ message: 'No file uploaded' });
-        }
+        if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
         const imageUrl = `/uploads/${req.file.filename}`;
-        res.json({ imageUrl: imageUrl, message: 'Image uploaded successfully' });
+        res.json({ imageUrl, message: 'Image uploaded successfully' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -254,14 +236,10 @@ app.delete('/api/events/:id', async (req, res) => {
   try {
     const event = await Event.findByIdAndDelete(req.params.id);
     if (!event) return res.status(404).json({ message: 'Event not found' });
-    
-    // Delete associated image if exists
     if (event.image) {
       const filename = event.image.split('/').pop();
       const filepath = path.join(uploadDir, filename);
-      if (fs.existsSync(filepath)) {
-        fs.unlinkSync(filepath);
-      }
+      if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
     }
     res.json({ message: 'Event deleted successfully' });
   } catch (err) {
@@ -313,14 +291,10 @@ app.delete('/api/plans/:id', async (req, res) => {
   try {
     const plan = await Plan.findByIdAndDelete(req.params.id);
     if (!plan) return res.status(404).json({ message: 'Plan not found' });
-    
-    // Delete associated image if exists
     if (plan.image) {
       const filename = plan.image.split('/').pop();
       const filepath = path.join(uploadDir, filename);
-      if (fs.existsSync(filepath)) {
-        fs.unlinkSync(filepath);
-      }
+      if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
     }
     res.json({ message: 'Plan deleted successfully' });
   } catch (err) {
@@ -360,8 +334,8 @@ app.get('/api/feedback/all', async (req, res) => {
 app.put('/api/feedback/:id/approve', async (req, res) => {
   try {
     const feedback = await Feedback.findByIdAndUpdate(
-      req.params.id, 
-      { approved: true }, 
+      req.params.id,
+      { approved: true },
       { new: true }
     );
     if (!feedback) return res.status(404).json({ message: 'Feedback not found' });
@@ -396,28 +370,28 @@ app.get('/api/admin/stats', async (req, res) => {
 
 // ============ HEALTH CHECK ============
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     message: 'Server is running',
     mongodb: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
   });
 });
 
-// ============ CATCH-ALL ROUTE (Serve index.html) ============
-app.get('*', (req, res) => {
-  // Skip API routes and static files
-  if (req.url.startsWith('/api')) return;
-  if (req.url.startsWith('/admin')) return;
-  if (req.url.includes('.')) return;
-  
-  res.sendFile(path.join(frontendPath, 'index.html'));
+// ============ ROOT ROUTE (no more index.html error!) ============
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    message: '🚀 E-Touring API is running!',
+    admin: '/admin/login.html',
+    health: '/api/health'
+  });
 });
 
 // ============ START SERVER ============
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`\n🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📁 Admin Dashboard: http://localhost:${PORT}/admin/login.html`);
+  console.log(`\n🚀 Server running on port ${PORT}`);
+  console.log(`📁 Admin Dashboard: /admin/login.html`);
   console.log(`🔐 Default credentials: admin / admin123`);
-  console.log(`📊 Health check: http://localhost:${PORT}/api/health\n`);
+  console.log(`📊 Health check: /api/health\n`);
 });
