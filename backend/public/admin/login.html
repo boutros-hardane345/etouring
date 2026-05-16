@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login | e_Touring</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Poppins', sans-serif;
             min-height: 100vh;
@@ -16,33 +23,122 @@
             justify-content: center;
             background: linear-gradient(135deg, #1b5e20, #2e7d32, #4caf50);
         }
+
         .login-container {
             background: white;
             padding: 2.5rem;
             border-radius: 30px;
             width: 100%;
             max-width: 420px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
             animation: slideUp 0.5s ease;
         }
-        @keyframes slideUp { from { opacity:0; transform:translateY(50px); } to { opacity:1; transform:translateY(0); } }
-        .logo { text-align: center; margin-bottom: 2rem; }
-        .logo-icon { width: 80px; height: 80px; background: linear-gradient(135deg, #2e7d32, #4caf50); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
-        .logo-icon i { font-size: 2.5rem; color: white; }
-        h1 { font-size: 1.8rem; color: #2e7d32; text-align: center; }
-        .form-group { margin-bottom: 1.5rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2e7d32; }
-        input { width: 100%; padding: 0.9rem 1rem; border: 2px solid #e8f5e9; border-radius: 15px; font-size: 1rem; background: #f9fbe7; }
-        input:focus { outline: none; border-color: #4caf50; box-shadow: 0 0 0 3px rgba(76,175,80,0.2); }
-        button { width: 100%; padding: 0.9rem; background: linear-gradient(135deg, #2e7d32, #4caf50); color: white; border: none; border-radius: 15px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
-        button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(46,125,50,0.3); }
-        .error { color: #d32f2f; margin-top: 1rem; text-align: center; }
-        .info { text-align: center; margin-top: 1.5rem; font-size: 0.8rem; color: #7cb342; }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #2e7d32, #4caf50);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .logo-icon i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: #2e7d32;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2e7d32;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 2px solid #e8f5e9;
+            border-radius: 15px;
+            font-size: 1rem;
+            background: #f9fbe7;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #4caf50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, #2e7d32, #4caf50);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(46, 125, 50, 0.3);
+        }
+
+        .error {
+            color: #d32f2f;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .info {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            color: #7cb342;
+        }
     </style>
 </head>
+
 <body>
     <div class="login-container">
-        <div class="logo"><div class="logo-icon"><img src="https://e-touring-front.vercel.app/images/logo.png" style="width:45px; height:45px; object-fit:contain;"></div><h1>e_Touring Admin</h1></div>
+        <div class="logo">
+            <div class="logo-icon"><img src="https://e-touring-front.vercel.app/images/logo.png"
+                    style="width:45px; height:45px; object-fit:contain;"></div>
+            <h1>e_Touring Admin</h1>
+        </div>
         <form id="loginForm">
             <div class="form-group"><label>Username</label><input type="text" id="username" required></div>
             <div class="form-group"><label>Password</label><input type="password" id="password" required></div>
@@ -52,13 +148,13 @@
     </div>
     <script>
         const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://e-touring-vdye.onrender.com';
-        
+
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('loginBtn');
             btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Logging in...';
             btn.disabled = true;
-            
+
             try {
                 const res = await fetch(`${API_URL}/api/auth/login`, {
                     method: 'POST',
@@ -76,7 +172,7 @@
                     btn.innerHTML = 'Login';
                     btn.disabled = false;
                 }
-            } catch(err) {
+            } catch (err) {
                 document.getElementById('errorMsg').innerText = 'Network error. Is backend running?';
                 document.getElementById('errorMsg').style.display = 'block';
                 btn.innerHTML = 'Login';
@@ -85,4 +181,5 @@
         });
     </script>
 </body>
+
 </html>

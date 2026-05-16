@@ -133,7 +133,7 @@ const plans = [
   { name: "Sour Souks", category: "Cultural", location: "Sour" },
 ];
 
-const MONGODB_URI = process.env.MONGO_URI;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
   console.error('❌ MONGODB_URI not found in .env file');

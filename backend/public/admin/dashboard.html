@@ -38,6 +38,7 @@
         async function fetchStats() {
             try {
                 const res = await fetch(`${API_URL}/api/admin/stats`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (res.status === 401) { localStorage.removeItem('adminToken'); window.location.href = 'login.html'; return; }
                 if (!res.ok) throw new Error();
                 const stats = await res.json();
                 document.getElementById('eventsCount').innerText = stats.eventsCount;

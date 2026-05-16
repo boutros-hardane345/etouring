@@ -5,13 +5,14 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
+const auth = require('./middleware/auth');
 
 const app = express();
 
 // ============ MIDDLEWARE ============
 app.use(cors({
   origin: '*',
-  credentials: true
+  credentials: false
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -158,7 +159,7 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 // ============ IMAGE UPLOAD ROUTES ============
-app.post('/api/upload/event', upload.single('image'), async (req, res) => {
+app.post('/api/upload/event', auth, upload.single('image'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
         const imageUrl = `/uploads/${req.file.filename}`;
@@ -168,7 +169,7 @@ app.post('/api/upload/event', upload.single('image'), async (req, res) => {
     }
 });
 
-app.post('/api/upload/plan', upload.single('image'), async (req, res) => {
+app.post('/api/upload/plan', auth, upload.single('image'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
         const imageUrl = `/uploads/${req.file.filename}`;
@@ -178,7 +179,7 @@ app.post('/api/upload/plan', upload.single('image'), async (req, res) => {
     }
 });
 
-app.delete('/api/upload/:filename', async (req, res) => {
+app.delete('/api/upload/:filename', auth, async (req, res) => {
     try {
         const filepath = path.join(uploadDir, req.params.filename);
         if (fs.existsSync(filepath)) {
@@ -195,7 +196,56 @@ app.delete('/api/upload/:filename', async (req, res) => {
 // ============ EVENTS API ============
 app.get('/api/events', async (req, res) => {
   try {
-    const events = await Event.find().sort({ date: 1 });
+    const events = await Event.find();
+
+    function parseEventDate(dateStr) {
+      if (!dateStr) return Number.POSITIVE_INFINITY;
+      const s = String(dateStr).trim();
+      if (!s || /^tba$/i.test(s)) return Number.POSITIVE_INFINITY;
+      const ms = Date.parse(s);
+      return Number.isFinite(ms) ? ms : Number.POSITIVE_INFINITY;
+    }
+
+    function parseEventTimeToMinutes(timeStr) {
+      if (!timeStr) return Number.POSITIVE_INFINITY;
+      const s = String(timeStr).trim();
+      if (!s || /^tba$/i.test(s)) return Number.POSITIVE_INFINITY;
+
+      // Supports: "10:30 AM", "10 AM", "14:30".
+      const m12 = s.match(/^\s*(\d{1,2})(?::(\d{2}))?\s*([AaPp][Mm])\s*$/);
+      if (m12) {
+        let h = parseInt(m12[1], 10);
+        const min = m12[2] ? parseInt(m12[2], 10) : 0;
+        const ampm = m12[3].toUpperCase();
+        if (h === 12) h = 0;
+        if (ampm === 'PM') h += 12;
+        return h * 60 + min;
+      }
+
+      const m24 = s.match(/^\s*(\d{1,2}):(\d{2})\s*$/);
+      if (m24) {
+        const h = parseInt(m24[1], 10);
+        const min = parseInt(m24[2], 10);
+        return h * 60 + min;
+      }
+
+      return Number.POSITIVE_INFINITY;
+    }
+
+    events.sort((a, b) => {
+      const da = parseEventDate(a.date);
+      const db = parseEventDate(b.date);
+      if (da !== db) return da - db;
+
+      const ta = parseEventTimeToMinutes(a.time);
+      const tb = parseEventTimeToMinutes(b.time);
+      if (ta !== tb) return ta - tb;
+
+      const aa = (a.title || '').toString();
+      const bb = (b.title || '').toString();
+      return aa.localeCompare(bb, undefined, { sensitivity: 'base' });
+    });
+
     res.json(events);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -212,7 +262,7 @@ app.get('/api/events/:id', async (req, res) => {
   }
 });
 
-app.post('/api/events', async (req, res) => {
+app.post('/api/events', auth, async (req, res) => {
   try {
     const event = new Event(req.body);
     await event.save();
@@ -222,7 +272,7 @@ app.post('/api/events', async (req, res) => {
   }
 });
 
-app.put('/api/events/:id', async (req, res) => {
+app.put('/api/events/:id', auth, async (req, res) => {
   try {
     const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!event) return res.status(404).json({ message: 'Event not found' });
@@ -232,7 +282,7 @@ app.put('/api/events/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/events/:id', async (req, res) => {
+app.delete('/api/events/:id', auth, async (req, res) => {
   try {
     const event = await Event.findByIdAndDelete(req.params.id);
     if (!event) return res.status(404).json({ message: 'Event not found' });
@@ -250,7 +300,9 @@ app.delete('/api/events/:id', async (req, res) => {
 // ============ PLANS API ============
 app.get('/api/plans', async (req, res) => {
   try {
-    const plans = await Plan.find().sort({ createdAt: -1 });
+    const plans = await Plan.find()
+      .collation({ locale: 'en', strength: 2 })
+      .sort({ name: 1 });
     res.json(plans);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -267,7 +319,7 @@ app.get('/api/plans/:id', async (req, res) => {
   }
 });
 
-app.post('/api/plans', async (req, res) => {
+app.post('/api/plans', auth, async (req, res) => {
   try {
     const plan = new Plan(req.body);
     await plan.save();
@@ -277,7 +329,7 @@ app.post('/api/plans', async (req, res) => {
   }
 });
 
-app.put('/api/plans/:id', async (req, res) => {
+app.put('/api/plans/:id', auth, async (req, res) => {
   try {
     const plan = await Plan.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!plan) return res.status(404).json({ message: 'Plan not found' });
@@ -287,7 +339,7 @@ app.put('/api/plans/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/plans/:id', async (req, res) => {
+app.delete('/api/plans/:id', auth, async (req, res) => {
   try {
     const plan = await Plan.findByIdAndDelete(req.params.id);
     if (!plan) return res.status(404).json({ message: 'Plan not found' });
@@ -322,7 +374,7 @@ app.post('/api/feedback', async (req, res) => {
   }
 });
 
-app.get('/api/feedback/all', async (req, res) => {
+app.get('/api/feedback/all', auth, async (req, res) => {
   try {
     const feedback = await Feedback.find().sort({ createdAt: -1 });
     res.json(feedback);
@@ -331,7 +383,7 @@ app.get('/api/feedback/all', async (req, res) => {
   }
 });
 
-app.put('/api/feedback/:id/approve', async (req, res) => {
+app.put('/api/feedback/:id/approve', auth, async (req, res) => {
   try {
     const feedback = await Feedback.findByIdAndUpdate(
       req.params.id,
@@ -345,7 +397,7 @@ app.put('/api/feedback/:id/approve', async (req, res) => {
   }
 });
 
-app.delete('/api/feedback/:id', async (req, res) => {
+app.delete('/api/feedback/:id', auth, async (req, res) => {
   try {
     const feedback = await Feedback.findByIdAndDelete(req.params.id);
     if (!feedback) return res.status(404).json({ message: 'Feedback not found' });
@@ -356,7 +408,7 @@ app.delete('/api/feedback/:id', async (req, res) => {
 });
 
 // ============ ADMIN STATS ============
-app.get('/api/admin/stats', async (req, res) => {
+app.get('/api/admin/stats', auth, async (req, res) => {
   try {
     const eventsCount = await Event.countDocuments();
     const plansCount = await Plan.countDocuments();

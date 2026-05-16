@@ -114,10 +114,10 @@ const feedbacks = [
   }
 ];
 
-const MONGODB_URI = process.env.MONGO_URI;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  console.error('❌ MONGO_URI not found in .env file');
+  console.error('❌ MONGODB_URI not found in .env file');
   process.exit(1);
 }
 
