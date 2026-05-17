@@ -25,14 +25,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Optional: Create default admin if none exists
-const createDefaultAdmin = async () => {
-  const existing = await Admin.findOne({ username: 'admin' });
-  if (!existing) {
-    const admin = new Admin({ username: 'admin', password: 'admin123' });
-    await admin.save();
-    console.log('Default admin created: admin/admin123');
-  }
-};
-createDefaultAdmin();
+// Intentionally NOT auto-creating a default admin.
+// Create admin users manually in MongoDB for security.
 
 module.exports = router;
