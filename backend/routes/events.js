@@ -2,10 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Event = require('../models/Event');
 const auth = require('../middleware/auth');
-const fs = require('fs');
-const path = require('path');
-
-const uploadDir = path.join(__dirname, '..', 'uploads');
 
 function parseEventDate(dateStr) {
   if (!dateStr) return Number.POSITIVE_INFINITY;
@@ -39,7 +35,9 @@ function parseEventTimeToMinutes(timeStr) {
 // GET all events (public)
 router.get('/', async (req, res) => {
   try {
-    const events = await Event.find();
+    const events = await Event.find()
+      .select('title date time location description badge createdAt')
+      .lean();
     events.sort((a, b) => {
       const da = parseEventDate(a.date);
       const db = parseEventDate(b.date);
@@ -61,7 +59,9 @@ router.get('/', async (req, res) => {
 // GET single event
 router.get('/:id', async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id);
+    const event = await Event.findById(req.params.id)
+      .select('title date time location description badge createdAt')
+      .lean();
     if (!event) return res.status(404).json({ message: 'Event not found' });
     res.json(event);
   } catch (err) {
@@ -96,13 +96,6 @@ router.delete('/:id', auth, async (req, res) => {
   try {
     const event = await Event.findByIdAndDelete(req.params.id);
     if (!event) return res.status(404).json({ message: 'Event not found' });
-
-    // Best-effort cleanup of uploaded image.
-    if (event.image && String(event.image).startsWith('/uploads/')) {
-      const filename = path.basename(String(event.image));
-      const filepath = path.join(uploadDir, filename);
-      if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
-    }
 
     res.json({ message: 'Event deleted' });
   } catch (err) {

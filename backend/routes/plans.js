@@ -10,9 +10,32 @@ const uploadDir = path.join(__dirname, '..', 'uploads');
 // GET all plans (public)
 router.get('/', async (req, res) => {
   try {
-    const plans = await Plan.find()
-      .collation({ locale: 'en', strength: 2 })
-      .sort({ name: 1 });
+    const plans = await Plan.find().collation({ locale: 'en', strength: 2 });
+
+    const extractNumber = (name) => {
+      const s = String(name || '');
+      const m = s.match(/\b(\d{1,3})\b/);
+      return m ? parseInt(m[1], 10) : null;
+    };
+
+    // Sort in JS so we can do "nulls last" + special numbered categories.
+    plans.sort((a, b) => {
+      const ca = String(a.category || '');
+      const cb = String(b.category || '');
+      const ccmp = ca.localeCompare(cb, undefined, { sensitivity: 'base' });
+      if (ccmp !== 0) return ccmp;
+
+      const category = ca;
+      const sa = a.sortOrder;
+      const sb = b.sortOrder;
+
+      const na = Number.isFinite(sa) ? sa : ((category === 'Religious Tour' || category === 'Road trip') ? (extractNumber(a.name) ?? Number.POSITIVE_INFINITY) : Number.POSITIVE_INFINITY);
+      const nb = Number.isFinite(sb) ? sb : ((category === 'Religious Tour' || category === 'Road trip') ? (extractNumber(b.name) ?? Number.POSITIVE_INFINITY) : Number.POSITIVE_INFINITY);
+      if (na !== nb) return na - nb;
+
+      return String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base' });
+    });
+
     res.json(plans);
   } catch (err) {
     res.status(500).json({ message: err.message });

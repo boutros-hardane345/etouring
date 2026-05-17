@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const planSchema = new mongoose.Schema({
   name: { type: String, required: true },
   category: String,
+  sortOrder: Number,
   type: { type: String, default: 'individual' },
   difficulty: String,
   location: String,
@@ -88,17 +89,17 @@ const plans = [
   { name: "Road Trip 11", category: "Road trip", location: "North Lebanon", difficulty: "Easy", features: ["Mayfouq", "Jran", "Derya", "Chebtine", "Alele"] },
 
   // ==================== RELIGIOUS TOURS ====================
-  { name: "Religious Tour 1", category: "Religious Tour", location: "North Lebanon", features: ["Annaya", "Kfarbaal", "Ehmej"] },
-  { name: "Religious Tour 2", category: "Religious Tour", location: "North Lebanon", features: ["Ehmej", "Laklouk", "Aqoura"] },
-  { name: "Religious Tour 3", category: "Religious Tour", location: "North Lebanon", features: ["Laklouk", "Aqoura", "Tannourine"] },
-  { name: "Religious Tour 4", category: "Religious Tour", location: "North Lebanon", features: ["Aqoura", "Mejdel", "Abboud"] },
-  { name: "Religious Tour 5", category: "Religious Tour", location: "North Lebanon", features: ["Tannourine", "Houb", "Douma"] },
-  { name: "Religious Tour 6", category: "Religious Tour", location: "North Lebanon", features: ["Tannourine", "Hadath el Jebbe", "Bcharri"] },
-  { name: "Religious Tour 7", category: "Religious Tour", location: "North Lebanon", features: ["Ehmej", "Jbeil"] },
-  { name: "Religious Tour 8", category: "Religious Tour", location: "North Lebanon", features: ["Jbeil", "Batroun"] },
-  { name: "Religious Tour 9", category: "Religious Tour", location: "North Lebanon", features: ["Jbeil", "Harissa"] },
-  { name: "Religious Tour 10", category: "Religious Tour", location: "North Lebanon", features: ["Batroun", "Jrabta", "Kfifen"] },
-  { name: "Religious Tour 11", category: "Religious Tour", location: "North Lebanon", features: ["Annaya", "Lehfed", "Mayfouq"] },
+  { name: "Religious Tour 1", category: "Religious Tour", sortOrder: 1, location: "North Lebanon", features: ["Annaya", "Kfarbaal", "Ehmej"] },
+  { name: "Religious Tour 2", category: "Religious Tour", sortOrder: 2, location: "North Lebanon", features: ["Ehmej", "Laklouk", "Aqoura"] },
+  { name: "Religious Tour 3", category: "Religious Tour", sortOrder: 3, location: "North Lebanon", features: ["Laklouk", "Aqoura", "Tannourine"] },
+  { name: "Religious Tour 4", category: "Religious Tour", sortOrder: 4, location: "North Lebanon", features: ["Aqoura", "Mejdel", "Abboud"] },
+  { name: "Religious Tour 5", category: "Religious Tour", sortOrder: 5, location: "North Lebanon", features: ["Tannourine", "Houb", "Douma"] },
+  { name: "Religious Tour 6", category: "Religious Tour", sortOrder: 6, location: "North Lebanon", features: ["Tannourine", "Hadath el Jebbe", "Bcharri"] },
+  { name: "Religious Tour 7", category: "Religious Tour", sortOrder: 7, location: "North Lebanon", features: ["Ehmej", "Jbeil"] },
+  { name: "Religious Tour 8", category: "Religious Tour", sortOrder: 8, location: "North Lebanon", features: ["Jbeil", "Batroun"] },
+  { name: "Religious Tour 9", category: "Religious Tour", sortOrder: 9, location: "North Lebanon", features: ["Jbeil", "Harissa"] },
+  { name: "Religious Tour 10", category: "Religious Tour", sortOrder: 10, location: "North Lebanon", features: ["Batroun", "Jrabta", "Kfifen"] },
+  { name: "Religious Tour 11", category: "Religious Tour", sortOrder: 11, location: "North Lebanon", features: ["Annaya", "Lehfed", "Mayfouq"] },
 
   // ==================== SIGHTSEEING ====================
   { name: "Sightseeing Jbeil", category: "Sightseeing", location: "Jbeil" },
@@ -147,15 +148,33 @@ mongoose.connect(MONGODB_URI)
     let inserted = 0;
     let skipped = 0;
 
+    const extractNumber = (name) => {
+      const s = String(name || '');
+      const m = s.match(/\b(\d{1,3})\b/);
+      return m ? parseInt(m[1], 10) : null;
+    };
+
     for (const plan of plans) {
+      // If sortOrder wasn't provided, compute it for numbered plans we care about.
+      if (plan.sortOrder == null && (plan.category === 'Religious Tour' || plan.category === 'Road trip')) {
+        const n = extractNumber(plan.name);
+        if (Number.isFinite(n)) plan.sortOrder = n;
+      }
+
       const exists = await Plan.findOne({ name: plan.name, location: plan.location });
       if (!exists) {
         await Plan.create(plan);
         console.log(`✅ Added: ${plan.name} (${plan.location || 'N/A'})`);
         inserted++;
       } else {
-        console.log(`⏭️  Skipped (already exists): ${plan.name}`);
-        skipped++;
+        // Backfill sortOrder on existing docs if missing.
+        if (plan.sortOrder != null && (exists.sortOrder == null || exists.sortOrder !== plan.sortOrder)) {
+          await Plan.updateOne({ _id: exists._id }, { $set: { sortOrder: plan.sortOrder } });
+          console.log(`🔧 Updated sortOrder: ${plan.name} -> ${plan.sortOrder}`);
+        } else {
+          console.log(`⏭️  Skipped (already exists): ${plan.name}`);
+          skipped++;
+        }
       }
     }
 
