@@ -10,7 +10,10 @@ module.exports = (req, res, next) => {
   }
   
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secretkey');
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ message: 'Server misconfigured: JWT_SECRET missing' });
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.admin = decoded;
     next();
   } catch (err) {

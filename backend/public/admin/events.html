@@ -41,7 +41,6 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Image</th>
                             <th>Title</th>
                             <th>Date</th>
                             <th>Time</th>
@@ -66,24 +65,7 @@
             <div class="form-group"><input type="text" id="eventTime" placeholder="Time (e.g. 10:30 AM or TBA)" class="form-control"></div>
             <div class="form-group"><input type="text" id="eventLocation" placeholder="Location" class="form-control"></div>
             <div class="form-group"><textarea id="eventDescription" placeholder="Description" class="form-control"></textarea></div>
-
-            <div class="form-group"><input type="text" id="eventPrice" placeholder="Price" class="form-control"></div>
-            <div class="form-group"><input type="text" id="eventSpotsLeft" placeholder="Spots Left" class="form-control"></div>
-            <div class="form-group"><select id="eventDifficulty" class="form-control">
-                    <option value="">Difficulty (optional)</option>
-                    <option>Easy</option>
-                    <option>Moderate</option>
-                    <option>Difficult</option>
-                </select></div>
-            <div class="form-group"><input type="text" id="eventCategory" placeholder="Category" class="form-control"></div>
             <div class="form-group"><input type="text" id="eventBadge" placeholder="Badge (optional)" class="form-control"></div>
-
-            <div class="form-group">
-                <input type="file" id="eventImageFile" accept="image/*" class="form-control">
-                <div class="upload-progress" id="uploadProgress"><i class="fas fa-spinner fa-pulse"></i> Uploading...</div>
-                <div id="imagePreview" class="image-preview"></div>
-                <input type="hidden" id="eventImage">
-            </div>
 
             <button class="btn btn-primary" onclick="saveEvent()">Save Event</button>
         </div>
@@ -96,12 +78,6 @@
 
         let allEvents = [];
 
-        function resolveImageUrl(url) {
-            if (!url) return '';
-            if (/^https?:\/\//i.test(url)) return url;
-            if (url.startsWith('/')) return `${API_URL}${url}`;
-            return url;
-        }
 
         function parseEventDateMs(dateStr) {
             if (!dateStr) return Number.POSITIVE_INFINITY;
@@ -145,7 +121,6 @@
             sortEventsInPlace(allEvents);
             document.getElementById('eventsBody').innerHTML = allEvents.map(e => `
                 <tr>
-                    <td>${e.image ? `<img src="${resolveImageUrl(e.image)}" class="table-image">` : '-'}</td>
                     <td>${escapeHtml(e.title)}</td>
                     <td>${escapeHtml(e.date || 'TBA')}</td>
                     <td>${escapeHtml(e.time || 'TBA')}</td>
@@ -183,53 +158,11 @@
             document.getElementById('eventTime').value = e.time || '';
             document.getElementById('eventLocation').value = e.location || '';
             document.getElementById('eventDescription').value = e.description || '';
-            document.getElementById('eventPrice').value = e.price || '';
-            document.getElementById('eventSpotsLeft').value = e.spotsLeft || '';
-            document.getElementById('eventDifficulty').value = e.difficulty || '';
-            document.getElementById('eventCategory').value = e.category || '';
             document.getElementById('eventBadge').value = e.badge || '';
-
-            document.getElementById('eventImage').value = e.image || '';
-            showImagePreview(e.image || '');
 
             document.getElementById('modalTitle').innerText = 'Edit Event';
             document.getElementById('eventModal').style.display = 'flex';
         }
-
-        function showImagePreview(url) {
-            const resolved = resolveImageUrl(url);
-            document.getElementById('imagePreview').innerHTML = resolved
-                ? `<img src="${resolved}"><button class="remove-image" type="button" onclick="removeImage()">✕</button>`
-                : '';
-        }
-
-        function removeImage() {
-            document.getElementById('eventImage').value = '';
-            document.getElementById('imagePreview').innerHTML = '';
-        }
-
-        document.getElementById('eventImageFile').addEventListener('change', async function (e) {
-            const file = e.target.files[0];
-            if (!file || !file.type.startsWith('image/')) { alert('Select image'); return; }
-            const formData = new FormData();
-            formData.append('image', file);
-            document.getElementById('uploadProgress').style.display = 'block';
-            try {
-                const res = await fetch(`${API_URL}/api/upload/event`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData });
-                if (res.status === 401) { localStorage.removeItem('adminToken'); window.location.href = 'login.html'; return; }
-                const data = await res.json();
-                if (res.ok) {
-                    document.getElementById('eventImage').value = data.imageUrl;
-                    showImagePreview(data.imageUrl);
-                } else {
-                    alert(data.message || 'Upload failed');
-                }
-            } catch (err) {
-                alert('Upload error');
-            } finally {
-                document.getElementById('uploadProgress').style.display = 'none';
-            }
-        });
 
         async function saveEvent() {
             const id = document.getElementById('eventId').value;
@@ -239,12 +172,7 @@
                 time: document.getElementById('eventTime').value,
                 location: document.getElementById('eventLocation').value,
                 description: document.getElementById('eventDescription').value,
-                price: document.getElementById('eventPrice').value,
-                spotsLeft: document.getElementById('eventSpotsLeft').value,
-                difficulty: document.getElementById('eventDifficulty').value,
-                category: document.getElementById('eventCategory').value,
-                badge: document.getElementById('eventBadge').value,
-                image: document.getElementById('eventImage').value
+                badge: document.getElementById('eventBadge').value
             };
 
             if (!payload.title || !payload.title.trim()) {
@@ -277,12 +205,7 @@
             document.getElementById('eventTime').value = '';
             document.getElementById('eventLocation').value = '';
             document.getElementById('eventDescription').value = '';
-            document.getElementById('eventPrice').value = '';
-            document.getElementById('eventSpotsLeft').value = '';
-            document.getElementById('eventDifficulty').value = '';
-            document.getElementById('eventCategory').value = '';
             document.getElementById('eventBadge').value = '';
-            removeImage();
             document.getElementById('modalTitle').innerText = 'Add Event';
             document.getElementById('eventModal').style.display = 'flex';
         };

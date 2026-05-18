@@ -13,9 +13,13 @@ router.post('/login', async (req, res) => {
     const isValid = await admin.comparePassword(password);
     if (!isValid) return res.status(401).json({ message: 'Invalid credentials' });
 
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ message: 'Server misconfigured: JWT_SECRET missing' });
+    }
+
     const token = jwt.sign(
       { id: admin._id, username: admin.username },
-      process.env.JWT_SECRET || 'secretkey',
+      process.env.JWT_SECRET,
       { expiresIn: '1d' }
     );
     res.json({ token, message: 'Login successful' });

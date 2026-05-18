@@ -2,15 +2,14 @@ const express = require('express');
 const router = express.Router();
 const Plan = require('../models/Plan');
 const auth = require('../middleware/auth');
-const fs = require('fs');
-const path = require('path');
-
-const uploadDir = path.join(__dirname, '..', 'uploads');
 
 // GET all plans (public)
 router.get('/', async (req, res) => {
   try {
-    const plans = await Plan.find().collation({ locale: 'en', strength: 2 });
+    const plans = await Plan.find()
+      .select('name category sortOrder type difficulty location distance duration priceIndividual priceGroup features stops includes popular description createdAt')
+      .collation({ locale: 'en', strength: 2 })
+      .lean();
 
     const extractNumber = (name) => {
       const s = String(name || '');
@@ -69,13 +68,6 @@ router.delete('/:id', auth, async (req, res) => {
   try {
     const plan = await Plan.findByIdAndDelete(req.params.id);
     if (!plan) return res.status(404).json({ message: 'Plan not found' });
-
-    // Best-effort cleanup of uploaded image.
-    if (plan.image && String(plan.image).startsWith('/uploads/')) {
-      const filename = path.basename(String(plan.image));
-      const filepath = path.join(uploadDir, filename);
-      if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
-    }
 
     res.json({ message: 'Plan deleted' });
   } catch (err) {

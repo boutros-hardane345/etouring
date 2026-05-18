@@ -2,14 +2,31 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const helmet = require('helmet');
+const compression = require('compression');
 const path = require('path');
 const fs = require('fs');
 
 const app = express();
 
+// Fail fast in production if secrets are missing.
+if (process.env.NODE_ENV === 'production') {
+  if (!process.env.MONGODB_URI) throw new Error('MONGODB_URI is required in production');
+  if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is required in production');
+}
+
 // ============ MIDDLEWARE ============
+app.use(helmet());
+app.use(compression());
+
+// CORS: prefer explicit origins via env (comma-separated). If not set, allow all.
+const corsOrigins = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map(s => s.trim())
+  .filter(Boolean);
+
 app.use(cors({
-  origin: '*',
+  origin: corsOrigins.length ? corsOrigins : '*',
   credentials: false
 }));
 app.use(express.json());
@@ -43,7 +60,6 @@ mongoose.connect(MONGODB_URI)
 // ============ API ROUTES ============
 // Keep all API handlers in ./routes to avoid duplication.
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/upload', require('./routes/uploads'));
 app.use('/api/events', require('./routes/events'));
 app.use('/api/plans', require('./routes/plans'));
 app.use('/api/feedback', require('./routes/feedback'));

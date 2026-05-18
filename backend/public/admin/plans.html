@@ -92,7 +92,6 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Image</th>
                             <th>Name</th>
                             <th>Category</th>
                             <th>Location</th>
@@ -134,11 +133,6 @@
                         class="btn btn-primary">+</button></div>
                 <div id="featuresList" class="features-list"></div><input type="hidden" id="featuresArray">
             </div>
-            <div class="form-group"><input type="file" id="planImageFile" accept="image/*" class="form-control">
-                <div class="upload-progress" id="uploadProgress"><i class="fas fa-spinner fa-pulse"></i> Uploading...
-                </div>
-                <div id="imagePreview" class="image-preview"></div><input type="hidden" id="planImage">
-            </div>
             <div class="form-group"><label><input type="checkbox" id="planPopular"> Popular</label></div>
             <button class="btn btn-primary" onclick="savePlan()">Save Plan</button>
         </div>
@@ -158,40 +152,13 @@
         window.removeFeature = function (idx) { featuresTemp.splice(idx, 1); renderFeaturesTags(); };
         document.getElementById('addFeatureBtn').onclick = () => { const val = document.getElementById('featureInput').value.trim(); if (val) { featuresTemp.push(val); renderFeaturesTags(); document.getElementById('featureInput').value = ''; } };
 
-        document.getElementById('planImageFile').addEventListener('change', async function (e) {
-            const file = e.target.files[0];
-            if (!file || !file.type.startsWith('image/')) { alert('Select image'); return; }
-            const formData = new FormData(); formData.append('image', file);
-            document.getElementById('uploadProgress').style.display = 'block';
-            try {
-                const res = await fetch(`${API_URL}/api/upload/plan`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData });
-                if (res.status === 401) { localStorage.removeItem('adminToken'); window.location.href = 'login.html'; return; }
-                const data = await res.json();
-                if (res.ok) { document.getElementById('planImage').value = data.imageUrl; showImagePreview(data.imageUrl); }
-            } catch (err) { alert('Upload error'); }
-            finally { document.getElementById('uploadProgress').style.display = 'none'; }
-        });
-
-        function resolveImageUrl(url) {
-            if (!url) return '';
-            if (/^https?:\/\//i.test(url)) return url;
-            if (url.startsWith('/')) return `${API_URL}${url}`;
-            return url;
-        }
-
-        function showImagePreview(url) {
-            const resolved = resolveImageUrl(url);
-            document.getElementById('imagePreview').innerHTML = resolved
-                ? `<img src="${resolved}"><button class="remove-image" onclick="removeImage()">✕</button>`
-                : '';
-        }
-        function removeImage() { document.getElementById('planImage').value = ''; document.getElementById('imagePreview').innerHTML = ''; }
+        // Plans no longer have images.
 
         async function loadPlans() {
             const res = await fetch(`${API_URL}/api/plans`);
             if (res.status === 401) { localStorage.removeItem('adminToken'); window.location.href = 'login.html'; return; }
             allPlans = await res.json();
-            document.getElementById('plansBody').innerHTML = allPlans.map(p => `<tr><td>${p.image ? `<img src="${resolveImageUrl(p.image)}" class="table-image">` : '-'}</td><td>${escapeHtml(p.name)}</td><td>${p.category || '-'}</td><td>${p.location || '-'}</td><td><button class="btn btn-warning" onclick="editPlan('${p._id}')">Edit</button> <button class="btn btn-danger" onclick="deletePlan('${p._id}')">Delete</button></td></tr>`).join('');
+            document.getElementById('plansBody').innerHTML = allPlans.map(p => `<tr><td>${escapeHtml(p.name)}</td><td>${p.category || '-'}</td><td>${p.location || '-'}</td><td><button class="btn btn-warning" onclick="editPlan('${p._id}')">Edit</button> <button class="btn btn-danger" onclick="deletePlan('${p._id}')">Delete</button></td></tr>`).join('');
         }
 
         // For simplicity, delete is done via API call. In production, consider adding confirmation and error handling. 
@@ -212,7 +179,6 @@
             document.getElementById('planDescription').value = p.description || '';
             featuresTemp = p.features || []; renderFeaturesTags();
             document.getElementById('planPopular').checked = p.popular || false;
-            if (p.image) { document.getElementById('planImage').value = p.image; showImagePreview(p.image); }
             document.getElementById('modalTitle').innerText = 'Edit Plan';
             document.getElementById('planModal').style.display = 'flex';
         }
@@ -226,14 +192,8 @@
                 location: document.getElementById('planLocation').value,
                 description: document.getElementById('planDescription').value,
                 features: featuresTemp,
-                image: document.getElementById('planImage').value,
                 popular: document.getElementById('planPopular').checked
             };
-
-            if (!payload.image) {
-                alert('Plan image is required. Please upload an image before saving.');
-                return;
-            }
 
             const url = id ? `${API_URL}/api/plans/${id}` : `${API_URL}/api/plans`;
             const method = id ? 'PUT' : 'POST';
@@ -250,7 +210,6 @@
             document.getElementById('planId').value = '';
             featuresTemp = [];
             renderFeaturesTags();
-            removeImage();
             document.getElementById('modalTitle').innerText = 'Add Plan';
             document.getElementById('planModal').style.display = 'flex';
         };
